@@ -1,6 +1,20 @@
-# Project description
+# MacosLeanStorage (mls)
+
+High-performance, safe, and efficient storage cleanup tool for macOS.
+
+## Project Description
 
 We want to build a CLI tool and Daemon using Go Lang (for better memory usage). That clean safe to remove files and directories that consume storage. That are taken by many applications. Notably Arc, google chrome, and many browsers, electron applications, Discord, vscode, cursor, antigravity, OpenAIAtlas ...
+
+## Technical Stack & Architecture
+
+- **Main Technologies**: Go (Golang), Cobra (CLI), Viper (Config), Zap (Logging).
+- **Architecture**:
+    - `cmd/`: CLI entry points and command definitions.
+    - `internal/scanner/`: Concurrent directory traversal and file analysis.
+    - `internal/cleaner/`: Logic for safe file deletion (with dry-run support).
+    - `internal/config/`: Configuration management using YAML and environment variables.
+    - `internal/scheduler/`: Logic for periodic background cleanup tasks.
 
 ## Instructions
 
@@ -22,5 +36,32 @@ We want to build a CLI tool and Daemon using Go Lang (for better memory usage). 
     - Pending tasks for the current phase.
     - Brainstormed items, analysis results, and decisions (as they are generated).
 
-### Execution and context
+### Development Conventions
+
+- **Concurrency**: Use Go routines and worker pools for filesystem I/O to maximize performance without overwhelming OS limits.
+- **Safety First**: All cleanup operations must default to **dry-run mode**. Deletion requires an explicit `--force` or `--confirm` flag.
+- **I/O Efficiency**: Prefer `os.ReadDir` over `filepath.Walk` for directory traversal.
+- **Logging**: Use structured logging with `zap` for performance and searchability.
+- **Multi-Profile Handling**: Logic should explicitly account for multi-profile applications (e.g., Arc/VSCode) by iterating through `User Data` subdirectories.
+- **Safety Thresholds**:
+    - **Safe Anytime**: Rebuildable data like `CachedData` or `DerivedData`.
+    - **Safe after 3+ Days**: System temp files and general logs.
+    - **Safe after 7+ Days**: Browser `CacheStorage` and VSCode `workspaceStorage`.
+
+### Execution and Context
 - Make sure you tackle deeply and efficiently all of the request of the prompt, take your time, do things in multiple steps, as much as it's required. Stop when needed and resume till you finish everything.
+
+## Building and Running
+
+### Prerequisites
+- Go 1.26.2 or later.
+- Homebrew (for system dependencies).
+
+### Build & Dev Commands
+```bash
+go build -o mls main.go
+./mls --help
+go test ./...
+golangci-lint run
+gofumpt -l -w .
+```
