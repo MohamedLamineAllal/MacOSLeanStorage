@@ -31,7 +31,3 @@
 - **Plan -> Act -> Validate** for each sub-task.
 - Incremental commits: One feature/fix per commit.
 - Run tests before committing.
-
-## Linter Configuration
-- Use `golangci-lint`.
-- Configured in `.golangci.yml`.
