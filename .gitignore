@@ -1,0 +1,24 @@
+# Binaries
+bin/
+mls
+dist/
+
+# Dependencies
+vendor/
+
+# Testing
+coverage.out
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Logs
+*.log
