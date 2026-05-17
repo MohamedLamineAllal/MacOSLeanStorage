@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
@@ -28,8 +30,29 @@ var scanCmd = &cobra.Command{
 
 		for _, t := range cfg.Targets {
 			if t.Command != "" {
+				fmt.Printf("\nTarget: %s (command: %s)\n", t.Name, t.Command)
+				if t.IntervalDays > 0 {
+					fmt.Printf("  Interval: %d days\n", t.IntervalDays)
+					// Calculate next run time
+					runTime := "Ready"
+					statePath := filepath.Join(os.TempDir(), fmt.Sprintf("mls-cmd-%s.lastrun", t.Name))
+					data, err := os.ReadFile(statePath)
+					if err == nil {
+						lastRun, err := time.Parse(time.RFC3339, string(data))
+						if err == nil {
+							nextRun := lastRun.Add(time.Duration(t.IntervalDays) * 24 * time.Hour)
+							if time.Now().Before(nextRun) {
+								runTime = nextRun.Format("2006-01-02 15:04")
+							}
+						}
+					}
+					fmt.Printf("  Next Run: %s\n", runTime)
+				} else {
+					fmt.Println("  Interval: Not scheduled")
+				}
 				continue
 			}
+
 			target := scanner.Target{
 				Name:        t.Name,
 				Path:        t.Path,

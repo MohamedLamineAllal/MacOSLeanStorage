@@ -56,3 +56,6 @@
 
 [2026-05-18]
 - Documented enhanced scan output in docs/USER_GUIDE.md.
+
+[2026-05-18]
+- Committed remaining changes in cmd/scan.go to finalize the repository state.

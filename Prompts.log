@@ -62,3 +62,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-18]
 - Request: "hmm u didnt commit, no tests no docs ... (in scan output context)"
+
+[2026-05-18]
+- Request: "(Implicit) Commit the remaining changes in cmd/scan.go."
