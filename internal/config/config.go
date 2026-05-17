@@ -48,21 +48,33 @@ func CreateDefaultConfig(path string) error {
 	}
 
 	defaultConfig := `targets:
-  - name: "VSCode Caches"
-    path: "~/Library/Caches/com.microsoft.VSCode"
-    threshold_days: 7
+  - name: "VSCode CachedData"
+    path: "~/Library/Application Support/Code/CachedData"
+    threshold_days: 3
     safety_level: 1
   - name: "VSCode Workspace Storage"
     path: "~/Library/Application Support/Code/User/workspaceStorage"
     threshold_days: 7
+    safety_level: 2
+  - name: "Chrome Global Cache"
+    path: "~/Library/Caches/Google/Chrome"
+    threshold_days: 7
     safety_level: 1
-  - name: "Chrome Caches"
-    path: "~/Library/Caches/Google/Chrome/Default/Cache"
-    threshold_days: 14
-    safety_level: 1
-  - name: "Xcode DerivedData"
-    path: "~/Library/Developer/Xcode/DerivedData"
+  - name: "Discord Cache"
+    path: "~/Library/Application Support/discord/Cache"
     threshold_days: 3
+    safety_level: 1
+  - name: "OpenAI Atlas Cache"
+    path: "~/Library/Caches/com.openai.atlas"
+    threshold_days: 3
+    safety_level: 1
+  - name: "Go Build Cache"
+    path: "~/Library/Caches/go-build"
+    threshold_days: 7
+    safety_level: 1
+  - name: "Homebrew Cache"
+    path: "~/Library/Caches/Homebrew"
+    threshold_days: 14
     safety_level: 1
 dry_run: true
 schedule: "0 0 * * *" # Daily at midnight
