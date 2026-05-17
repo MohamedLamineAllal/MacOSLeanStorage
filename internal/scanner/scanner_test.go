@@ -98,38 +98,48 @@ func TestScan_Glob(t *testing.T) {
 	assert.Contains(t, result.Files, oldFile2)
 }
 
-func TestScan_Folder(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "mls-folder-test")
+func TestScan_FolderHybrid(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "mls-hybrid-test")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	// Create a subfolder with files
 	cacheDir := filepath.Join(tempDir, "Cache")
 	err = os.MkdirAll(cacheDir, 0755)
 	assert.NoError(t, err)
 
+	// File inside is very old
 	oldFile := filepath.Join(cacheDir, "old.txt")
-	err = os.WriteFile(oldFile, []byte("old content"), 0644)
+	err = os.WriteFile(oldFile, []byte("old"), 0644)
 	assert.NoError(t, err)
-
-	// Set both folder and file modification time to 10 days ago
-	oldTime := time.Now().Add(-10 * 24 * time.Hour)
-	err = os.Chtimes(oldFile, oldTime, oldTime)
-	assert.NoError(t, err)
-	err = os.Chtimes(cacheDir, oldTime, oldTime)
-	assert.NoError(t, err)
+	oldTime := time.Now().Add(-20 * 24 * time.Hour)
+	os.Chtimes(oldFile, oldTime, oldTime)
 
 	s := New(zap.NewNop())
 	target := Target{
-		Name:      "Folder Test",
+		Name:      "Hybrid Test",
 		Path:      cacheDir,
 		Threshold: 7 * 24 * time.Hour,
 		Type:      "folder",
 	}
 
+	// Case 1: Folder mtime is old (Fast Path)
+	os.Chtimes(cacheDir, oldTime, oldTime)
 	result, err := s.Scan(target)
 	assert.NoError(t, err)
 	assert.Len(t, result.Files, 1)
-	assert.Equal(t, cacheDir, result.Files[0])
-	assert.Equal(t, int64(len("old content")), result.TotalSize)
+
+	// Case 2: Folder mtime is new (Slow Path - triggers deep scan)
+	now := time.Now()
+	os.Chtimes(cacheDir, now, now)
+	result, err = s.Scan(target)
+	assert.NoError(t, err)
+	assert.Len(t, result.Files, 1, "Should still detect stale contents despite new folder mtime")
+
+	// Case 3: Folder mtime new, but has recent file (Slow Path)
+	newFile := filepath.Join(cacheDir, "new.txt")
+	err = os.WriteFile(newFile, []byte("new"), 0644)
+	assert.NoError(t, err)
+	result, err = s.Scan(target)
+	assert.NoError(t, err)
+	assert.Len(t, result.Files, 0, "Should not detect as stale because it contains a recent file")
 }

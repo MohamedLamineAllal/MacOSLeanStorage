@@ -19,10 +19,8 @@ Build a high-performance, safe, and efficient storage cleanup tool for macOS, fo
 
 ## 3. Design Choices
 
-### Performance & Efficiency
-*   **Concurrency**: Use Go routines to scan multiple directories in parallel. A worker pool will handle large directory trees to avoid OS file descriptor limits.
-*   **Minimal Footprint**: Avoid loading entire file lists into memory. Use streaming or batching if necessary.
-*   **I/O Optimization**: Extensively uses `os.ReadDir` (Go 1.16+) recursively for maximum performance and lower memory overhead compared to `filepath.Walk`.
+### Staleness Check Optimization
+* **Hybrid Adaptive Staleness Check**: For folder-level cleanup, the scanner first checks the folder `mtime` (Fast Path). If the folder `mtime` is recent, a recursive deep scan (Slow Path) is triggered only if necessary to confirm content staleness. This ensures high performance for most directories while maintaining accuracy even when system metadata is updated by external factors (e.g., Finder access).
 
 ### Safety
 *   **Dry Run**: Every operation defaults to a dry run. The user must explicitly pass a flag to delete.
