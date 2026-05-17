@@ -63,7 +63,13 @@ func (s *Scanner) Scan(target Target) (*Result, error) {
 		}
 
 		if (target.Type == "folder" || target.Type == "both") && info.IsDir() {
-			if now.Sub(info.ModTime()) > target.Threshold {
+			isStale, err := s.isFolderStale(p, target.Threshold, now)
+			if err != nil {
+				s.logger.Warn("Failed to check folder staleness", zap.String("path", p), zap.Error(err))
+				continue
+			}
+
+			if isStale {
 				size, err := s.getDirSize(p)
 				if err != nil {
 					s.logger.Warn("Failed to calculate directory size", zap.String("path", p), zap.Error(err))
@@ -71,7 +77,7 @@ func (s *Scanner) Scan(target Target) (*Result, error) {
 				result.Files = append(result.Files, p)
 				result.TotalSize += size
 			}
-			continue // If we match the folder, we don't scan inside it for files in "folder" mode
+			continue
 		}
 
 		if target.Type == "file" || target.Type == "both" || target.Type == "" {
@@ -113,6 +119,27 @@ func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]str
 		}
 	}
 	return nil
+}
+
+func (s *Scanner) isFolderStale(path string, threshold time.Duration, now time.Time) (bool, error) {
+	stale := true
+	err := filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil // Skip errors accessing files
+		}
+		if !info.IsDir() {
+			if now.Sub(info.ModTime()) <= threshold {
+				stale = false
+				return fmt.Errorf("not stale") // Fast exit
+			}
+		}
+		return nil
+	})
+
+	if err != nil && err.Error() == "not stale" {
+		return false, nil
+	}
+	return stale, err
 }
 
 func (s *Scanner) getDirSize(path string) (int64, error) {
