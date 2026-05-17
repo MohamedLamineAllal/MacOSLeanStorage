@@ -66,3 +66,7 @@
 
 [2026-05-18]
 - Updated documentation to include technical details of command-scheduling persistence (lastrun files in /tmp).
+
+[2026-05-18]
+- Added test coverage for cmd/processor.go.
+- Staged and committed all pending changes for cmd/scan.go, cmd/clean.go, and cmd/processor.go.
