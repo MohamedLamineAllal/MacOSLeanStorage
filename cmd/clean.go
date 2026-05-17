@@ -17,7 +17,7 @@ var cleanCmd = &cobra.Command{
 		}
 
 		processor := NewTargetProcessor(logger, cfg.IgnorePatterns, cfg.DryRun)
-		return processor.Run(cfg.Targets, true)
+		return processor.Run(cfg.Targets, true, false)
 	},
 
 }

@@ -77,3 +77,9 @@
 [2026-05-18]
 - Fixed TestExecuteCommand in internal/cleaner/cleaner_test.go by restoring SetDryRun method in internal/cleaner/cleaner.go.
 - Verified all tests pass.
+
+[2026-05-18]
+- Refactored scan and clean commands to use a unified TargetProcessor.Run method.
+- Consolidated all target processing, matching, and summary logic into cmd/processor.go.
+- Restored concise logging format with support for the --verbose flag.
+- Verified build and ensured all tests pass.

@@ -17,8 +17,10 @@ var scanCmd = &cobra.Command{
 		}
 
 		processor := NewTargetProcessor(logger, cfg.IgnorePatterns, cfg.DryRun)
-		return processor.Run(cfg.Targets, false)
-	},
+		verbose, _ := cmd.Flags().GetBool("verbose")
+		return processor.Run(cfg.Targets, false, verbose)
+		},
+
 }
 
 func init() {
