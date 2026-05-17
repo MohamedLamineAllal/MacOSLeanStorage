@@ -1,11 +1,26 @@
 targets:
   - name: "Arc Cache"
-    path: "~/Library/Application Support/Arc/User Data/*/Cache/*"
+    path: "~/Library/Application Support/Arc/User Data/**/*Cache*/**"
+    threshold_days: 3
+    safety_level: 1
+    type: "both"
+  - name: "Arc Cache"
+    path: "~/Library/Application Support/Arc/User Data/**/CacheStorage/*"
     threshold_days: 3
     safety_level: 1
     type: "both"
   - name: "Chrome Global Cache"
-    path: "~/Library/Caches/Google/Chrome"
+    path: "~/Library/Caches/Google/Chrome/*"
+    threshold_days: 3
+    safety_level: 1
+    type: "both"
+  - name: "Chrome CacheStorage Cache"
+    path: "~/Library/Application Support/Google/Chrome/**/CacheStorage/**"
+    threshold_days: 3
+    safety_level: 1
+    type: "both"
+  - name: "Chrome crx Cache"
+    path: "~/Library/Application Support/Google/GoogleUpdater/crx_cache/*"
     threshold_days: 3
     safety_level: 1
     type: "both"
