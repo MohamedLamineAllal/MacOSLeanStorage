@@ -50,3 +50,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-18]
 - Request: "You didn't document it arhcitecture, user guide .. you didn't build test for this and run it"
+
+[2026-05-18]
+- Request: "go build -o mls main.go... cmd/clean.go:31:7: undefined: scheduler"

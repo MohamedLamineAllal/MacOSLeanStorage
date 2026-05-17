@@ -7,6 +7,7 @@ import (
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/cleaner"
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner"
+	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )

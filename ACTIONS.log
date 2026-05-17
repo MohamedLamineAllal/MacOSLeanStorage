@@ -40,3 +40,7 @@
 [2026-05-18]
 - Documented interval_days feature in architecture and user guide.
 - Added and passed unit test TestShouldRunCommand.
+
+[2026-05-18]
+- Fixed missing scheduler import in cmd/clean.go.
+- Verified build success.
