@@ -41,3 +41,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-17]
 - Request: "i want it in the logging when dry run is run in the final line."
+
+[2026-05-17]
+- Request: "Let's add the support of cleaning pnpm cache... normally the best way is to use pnpm store prune... if yes go and build it."

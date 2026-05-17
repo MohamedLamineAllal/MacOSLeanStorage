@@ -85,9 +85,10 @@ The directory path to monitor. You can use standard file globbing.
 
 
 ### `targets`
-A list of directories to monitor.
+A list of directories to monitor or commands to execute.
 - `name`: A descriptive name for the target.
 - `path`: The absolute path or a home-relative path (using `~/`).
+- `command`: A system command to run (e.g., `pnpm store prune`).
 - `threshold_days`: Items older than this many days will be targeted for cleanup.
 - `type`: Defines how the target should be cleaned. Available values:
     - `"file"` (default): Scans inside the path and deletes individual old files.

@@ -23,6 +23,7 @@ type TargetConfig struct {
 	Threshold      int      `mapstructure:"threshold_days"`
 	SafetyLevel    int      `mapstructure:"safety_level"`
 	Type           string   `mapstructure:"type"` // "file", "folder", or "both"
+	Command        string   `mapstructure:"command"`
 	IgnorePatterns []string `mapstructure:"ignore_patterns"`
 }
 

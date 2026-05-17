@@ -2,6 +2,8 @@ package cleaner
 
 import (
 	"os"
+	"os/exec"
+	"strings"
 
 	"go.uber.org/zap"
 )
@@ -52,6 +54,24 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	}
 
 	return deletedCount, freedSpace, nil
+}
+
+// ExecuteCommand runs a shell command
+func (c *Cleaner) ExecuteCommand(command string) error {
+	if c.dryRun {
+		c.logger.Info("[DRY RUN] Would execute command", zap.String("command", command))
+		return nil
+	}
+
+	c.logger.Info("Executing command", zap.String("command", command))
+	parts := strings.Fields(command)
+	cmd := exec.Command(parts[0], parts[1:]...)
+	err := cmd.Run()
+	if err != nil {
+		c.logger.Error("Failed to execute command", zap.String("command", command), zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 // SetDryRun toggles the dry run mode

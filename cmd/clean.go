@@ -24,45 +24,55 @@ var cleanCmd = &cobra.Command{
 
 		s := scanner.New(logger, cfg.IgnorePatterns)
 		c := cleaner.New(logger, cfg.DryRun)
+var allPaths []string
+var allCommands []string
 
-		var allPaths []string
+for _, t := range cfg.Targets {
+	if t.Command != "" {
+		allCommands = append(allCommands, t.Command)
+		continue
+	}
 
-		for _, t := range cfg.Targets {
-			target := scanner.Target{
-				Name:        t.Name,
-				Path:        t.Path,
-				Threshold:   time.Duration(t.Threshold) * 24 * time.Hour,
-				SafetyLevel: t.SafetyLevel,
-				Type:        t.Type,
-			}
+	target := scanner.Target{
+		Name:        t.Name,
+		Path:        t.Path,
+		Threshold:   time.Duration(t.Threshold) * 24 * time.Hour,
+		SafetyLevel: t.SafetyLevel,
+		Type:        t.Type,
+	}
 
-			result, err := s.Scan(target, t.IgnorePatterns)
-			if err != nil {
-				logger.Error("Scan failed for target", zap.String("name", t.Name), zap.Error(err))
-				continue
-			}
+	result, err := s.Scan(target, t.IgnorePatterns)
+	if err != nil {
+		logger.Error("Scan failed for target", zap.String("name", t.Name), zap.Error(err))
+		continue
+	}
 
-			allPaths = append(allPaths, result.Files...)
-		}
+	allPaths = append(allPaths, result.Files...)
+}
 
-		if len(allPaths) == 0 {
-			fmt.Println("No files found to clean.")
-			return nil
-		}
+if len(allPaths) == 0 && len(allCommands) == 0 {
+	fmt.Println("No files or commands found to clean.")
+	return nil
+}
 
-		fmt.Printf("Cleaning %d files...\n", len(allPaths))
-		count, size, err := c.Clean(allPaths)
-		if err != nil {
-			return err
-		}
+if len(allPaths) > 0 {
+	fmt.Printf("Cleaning %d files...\n", len(allPaths))
+	count, size, err := c.Clean(allPaths)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Clean Summary: Deleted %d files, freed %.2f MB\n", count, float64(size)/(1024*1024))
+}
 
-		if cfg.DryRun {
-			fmt.Printf("\nDRY RUN Summary: Would have deleted %d files, freeing %.2f MB\nIf you want to perform the actual cleanup, run the command mls clean --dry-run=false", count, float64(size)/(1024*1024))
-		} else {
-			fmt.Printf("\nClean Summary: Deleted %d files, freed %.2f MB\n", count, float64(size)/(1024*1024))
-		}
+for _, cmd := range allCommands {
+	err := c.ExecuteCommand(cmd)
+	if err != nil {
+		return err
+	}
+}
 
-		return nil
+fmt.Printf("Mode: %s\n", map[bool]string{true: "DRY RUN", false: "LIVE"}[cfg.DryRun])
+return nil
 	},
 }
 
