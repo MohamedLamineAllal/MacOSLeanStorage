@@ -81,32 +81,31 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 			continue
 		}
 
-		// Handle directory-based logic
-		if info.IsDir() {
-			if target.Type == "folder" || target.Type == "both" {
-				isStale, err := s.checkStaleness(p, target.Threshold, now)
+		// Always check if it's a directory and it needs checking staleness
+		if info.IsDir() && (target.Type == "folder" || target.Type == "both") {
+			isStale, err := s.checkStaleness(p, target.Threshold, now)
+			if err != nil {
+				s.logger.Debug("Failed to check folder staleness", zap.String("path", p), zap.Error(err))
+			} else if isStale {
+				size, err := s.getDirSize(p)
 				if err != nil {
-					s.logger.Debug("Failed to check folder staleness", zap.String("path", p), zap.Error(err))
-					continue
+					s.logger.Debug("Failed to calculate directory size", zap.String("path", p), zap.Error(err))
 				}
-
-				if isStale {
-					size, err := s.getDirSize(p)
-					if err != nil {
-						s.logger.Debug("Failed to calculate directory size", zap.String("path", p), zap.Error(err))
-					}
-					result.Files = append(result.Files, p)
-					result.TotalSize += size
-				}
+				result.Files = append(result.Files, p)
+				result.TotalSize += size
 			}
-			continue
 		}
 
-		// Handle file-based logic
-		if target.Type == "file" || target.Type == "both" || target.Type == "" {
-			err = s.walkFiles(p, target.Threshold, &result.Files, &result.TotalSize, now)
-			if err != nil {
-				s.logger.Debug("Failed to walk files", zap.String("path", p), zap.Error(err))
+		// Always walk files if type allows files
+		if (target.Type == "file" || target.Type == "both") {
+			if info.IsDir() {
+				err = s.walkFiles(p, target.Threshold, &result.Files, &result.TotalSize, now)
+				if err != nil {
+					s.logger.Debug("Failed to walk files", zap.String("path", p), zap.Error(err))
+				}
+			} else if now.Sub(info.ModTime()) > target.Threshold {
+				result.Files = append(result.Files, p)
+				result.TotalSize += info.Size()
 			}
 		}
 	}
