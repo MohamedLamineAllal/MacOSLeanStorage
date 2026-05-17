@@ -35,3 +35,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-17]
 - Request: "You didn't write tests and run tests for the glob ** syntax. Also add in README.md and user guide the instruction for such patterns."
+
+[2026-05-17]
+- Request: "Please add an instruction for what argument to add to force delete (not DRY RUN)"

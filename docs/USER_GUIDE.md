@@ -47,8 +47,11 @@ mls clean
 ```
 
 To actually delete the files, you have two options:
-1.  Set `dry_run: false` in your `~/.MacosLeanStorage.yaml`.
-2.  Use the flag: `mls clean --dry-run=false`
+1. Set `dry_run: false` in your `~/.MacosLeanStorage.yaml`.
+2. Use the command line flag to override the default:
+   ```bash
+   mls clean --dry-run=false
+   ```
 
 ### `serve`
 The `serve` command starts a background scheduler that runs the cleanup process according to the `schedule` defined in your configuration file.
