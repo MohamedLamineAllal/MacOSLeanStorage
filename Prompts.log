@@ -65,3 +65,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-18]
 - Request: "(Implicit) Commit the remaining changes in cmd/scan.go."
+
+[2026-05-18]
+- Request: "Can you explain to me as well as document it... how does Command targets works, once it's run... what mechanism is used for that. how is that persisted ?"
