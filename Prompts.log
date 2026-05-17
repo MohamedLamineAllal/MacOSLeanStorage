@@ -47,3 +47,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-18]
 - Request: "You didn't finish the work... how are you handling the execution of the scheduling and to not execute right away ..."
+
+[2026-05-18]
+- Request: "You didn't document it arhcitecture, user guide .. you didn't build test for this and run it"

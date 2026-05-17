@@ -31,3 +31,17 @@ func TestScheduler(t *testing.T) {
 		t.Fatal("Task not executed in time")
 	}
 }
+
+func TestShouldRunCommand(t *testing.T) {
+	s := New(zap.NewNop())
+	commandName := "test-cmd"
+	
+	// Test first run (should run)
+	assert.True(t, s.ShouldRunCommand(commandName, 30))
+	
+	// Record run
+	s.UpdateCommandRunTime(commandName)
+	
+	// Test immediate check (should not run)
+	assert.False(t, s.ShouldRunCommand(commandName, 30))
+}

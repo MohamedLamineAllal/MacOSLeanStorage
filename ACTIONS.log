@@ -36,3 +36,7 @@
 - Implemented command frequency tracking in internal/scheduler.
 - Updated cmd/clean.go to enforce intervals for command-based targets.
 - Documented the interval scheduling feature.
+
+[2026-05-18]
+- Documented interval_days feature in architecture and user guide.
+- Added and passed unit test TestShouldRunCommand.
