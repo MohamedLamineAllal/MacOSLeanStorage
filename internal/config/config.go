@@ -52,9 +52,17 @@ func CreateDefaultConfig(path string) error {
     path: "~/Library/Caches/com.microsoft.VSCode"
     threshold_days: 7
     safety_level: 1
+  - name: "VSCode Workspace Storage"
+    path: "~/Library/Application Support/Code/User/workspaceStorage"
+    threshold_days: 7
+    safety_level: 1
   - name: "Chrome Caches"
     path: "~/Library/Caches/Google/Chrome/Default/Cache"
     threshold_days: 14
+    safety_level: 1
+  - name: "Xcode DerivedData"
+    path: "~/Library/Developer/Xcode/DerivedData"
+    threshold_days: 3
     safety_level: 1
 dry_run: true
 schedule: "0 0 * * *" # Daily at midnight
