@@ -15,6 +15,7 @@ Bellow is the mode of operation that you need to follow. Make sure you don't mis
 - **Incremental Updates**: Every significant step or decision must be recorded in `MEMORY.md`.
 - **Response Documentation**: When creating a substantial response, analysis, guide, recommendation, or decision-support note, write it as a Markdown file under `docs` using a clear well named subfolder structure and organization. Keep response files organized by topic, use descriptive filenames, and reference the created file in the final chat response.
 - **Git Integration**: All changes and actions should be committed with descriptive messages following conventional commits.
+- **Documentation**: Maintain and keep Project Documentation up to date. Document all functionalities, features, .... As well as all decisions, architecture choices, analysis and research.
 
 ### Memory Logic
 
