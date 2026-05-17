@@ -22,7 +22,7 @@ Build a high-performance, safe, and efficient storage cleanup tool for macOS, fo
 ### Performance & Efficiency
 *   **Concurrency**: Use Go routines to scan multiple directories in parallel. A worker pool will handle large directory trees to avoid OS file descriptor limits.
 *   **Minimal Footprint**: Avoid loading entire file lists into memory. Use streaming or batching if necessary.
-*   **I/O Optimization**: Use `os.ReadDir` instead of `filepath.Walk` (Go 1.16+) for better performance on large directories.
+*   **I/O Optimization**: Extensively uses `os.ReadDir` (Go 1.16+) recursively for maximum performance and lower memory overhead compared to `filepath.Walk`.
 
 ### Safety
 *   **Dry Run**: Every operation defaults to a dry run. The user must explicitly pass a flag to delete.

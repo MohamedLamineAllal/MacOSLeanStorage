@@ -21,11 +21,19 @@ This will reveal the file in Finder.
 ## Commands
 
 ### `scan`
-The `scan` command analyzes all configured targets and lists files that exceed the `threshold_days`. It does not delete anything. Use this to see what `mls` has found.
+The `scan` command analyzes all configured targets and lists items that exceed the `threshold_days`. It does not delete anything. Use this to see what `mls` has found.
 
 ```bash
 mls scan
 ```
+
+**New in v1.1:**
+- **Concise Output**: `mls scan` now provides a per-target summary by default. 
+- **Detailed Match Listing**: Individual files/folders are only listed if there are 10 or fewer matches.
+- **Verbose Flag**: To see a full list of all matching items regardless of the count, use the `--verbose` or `-v` flag:
+  ```bash
+  mls scan --verbose
+  ```
 
 ### `clean`
 The `clean` command performs a scan and then deletes the matched files. 
@@ -58,7 +66,11 @@ The configuration file is written in YAML.
 A list of directories to monitor.
 - `name`: A descriptive name for the target.
 - `path`: The absolute path or a home-relative path (using `~/`).
-- `threshold_days`: Files older than this many days will be targeted for cleanup.
+- `threshold_days`: Items older than this many days will be targeted for cleanup.
+- `type`: Defines how the target should be cleaned. Available values:
+    - `"file"` (default): Scans inside the path and deletes individual old files.
+    - `"folder"`: Treats the matched path itself as the target. If the folder is old enough, the entire folder is deleted.
+    - `"both"`: Deletes both old files inside and the folder itself if staleness criteria are met.
 - `safety_level`: (Reserved for future use) Intended to define how aggressive the cleanup should be.
 
 ### `dry_run`
