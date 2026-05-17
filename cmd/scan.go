@@ -27,6 +27,9 @@ var scanCmd = &cobra.Command{
 		var totalSize int64
 
 		for _, t := range cfg.Targets {
+			if t.Command != "" {
+				continue
+			}
 			target := scanner.Target{
 				Name:        t.Name,
 				Path:        t.Path,

@@ -56,3 +56,6 @@ User: When running scan the configuration file when doesn't exist is not being c
 
 [2026-05-18]
 - Request: "Test failed... You should always run tests after you create them."
+
+[2026-05-18]
+- Request: "You didn't update scan.go to account for new command feature. You should update it, to know to skip command from normal scan."
