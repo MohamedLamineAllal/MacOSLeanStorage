@@ -47,6 +47,12 @@ func CreateDefaultConfig(path string) error {
 		return nil // Already exists
 	}
 
+	// Create parent directory if it doesn't exist
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create config directory: %w", err)
+	}
+
 	defaultConfig := `targets:
   - name: "Arc Cache"
     path: "~/Library/Application Support/Arc/User Data/*/Cache"

@@ -59,19 +59,19 @@ func initLogger() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
-	} else {
+	if cfgFile == "" {
 		defaultPath, err := config.GetDefaultConfigPath()
 		cobra.CheckErr(err)
-
-		// Create default config if it doesn't exist
-		err = config.CreateDefaultConfig(defaultPath)
-		cobra.CheckErr(err)
-
-		viper.SetConfigFile(defaultPath)
+		cfgFile = defaultPath
 	}
 
+	// Create default config if it doesn't exist
+	err := config.CreateDefaultConfig(cfgFile)
+	if err != nil {
+		logger.Warn("Failed to create default config", zap.String("path", cfgFile), zap.Error(err))
+	}
+
+	viper.SetConfigFile(cfgFile)
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
