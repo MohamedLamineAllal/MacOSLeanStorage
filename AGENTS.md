@@ -13,13 +13,13 @@ You should do this in each prompt without exception.
 
 - **Resumability**: At the start of every interaction, the agent MUST read `MEMORY.md` to understand the current phase, progress, and context. As well as git commits.
 - **Prompt Logging**: The agent MUST log every significant user prompt into `Prompts.log` to maintain a history of directives and intent.
-- **Log done actions**: For every action you do, log it down to `ACTIONS.log`. That would help me and any other dev to see what was done by the AI. As a full history. Not to be read and used by the Agent. Unless there an issue (commits, prompts, MEMORY not done, logged synced forgotten), and that would help.
+- **Log done actions**: For every action you do, log it down to `ACTIONS.log`. That would help me and any other dev to see what was done by the AI. As a full history. Not to be read and used by the Agent. Unless there an issue (commits, prompts, MEMORY not done, logged synced forgotten), and that would help. Also make sure you log the action with details and the whole context. So anyone can understand and with details. It's ok if this file grow with time.
 - **Contextual Awareness**: The agent should always reference `MEMORY.md` before proposing new actions to ensure continuity.
 - **Incremental Updates**: Every significant step or decision must be recorded in `MEMORY.md`.
 - **Response Documentation**: When creating a substantial response, analysis, guide, recommendation, or decision-support note, write it as a Markdown file under `docs` using a clear well named subfolder structure and organization. Keep response files organized by topic, use descriptive filenames, and reference the created file in the final chat response.
 - **Git Integration**: All changes and actions should be committed with descriptive messages following conventional commits.
 - **Documentation**: Maintain and keep Project Documentation up to date. Document all functionalities, features, .... As well as all decisions, architecture choices, analysis and research. And changes.
-- **Testing**: Build test for every features you make. And run tests after every change you make.
+- **Testing**: Build test for every features you make. And run tests after every change you make. Also when you make changes always make sure to update tests if needed.
 
 ### Memory Logic
 
