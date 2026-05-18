@@ -14,7 +14,7 @@ The project is currently in the **Development & Feature Refinement** phase. We h
 - **Cleanup Inventory**: Populated configuration with the full list of safe cleanup targets.
 - **Ignore Patterns**: Implemented a performant glob-based ignore system (global and target-specific) to exclude macOS metadata. Optimized directory walking to avoid unnecessary errors and refactored logging.
 - **Bug Fix**: Resolved size discrepancy between `scan` and `clean` commands. Prevented double-counting in `Scanner` for stale folders and implemented accurate recursive directory size calculation in `Cleaner`. Harmonized ignore patterns across both components for exact total size matching. Verified with `cmd/size_consistency_test.go`.
-- **UI/UX Enhancement**: Integrated `fatih/color` for vibrant, colorful CLI output. Colorized targets, paths, commands, and match indicators across all commands. Centralized color themes in `cmd/colors.go`.
+- **UI/UX Enhancement**: Integrated `fatih/color` for vibrant output. Implemented truncated directory listing (max 5 items) for dry runs to keep CLI output clean. Added full, untruncated logging to `/tmp/mls-last-run.log` (overwritten per run).
 - **Compliance**: Restored architectural compliance to `AGENTS.md` mandates, including `Prompts.log` and `ACTIONS.log` enforcement.
 
 ## Pending Tasks

@@ -43,6 +43,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	var commandNames []string
 	var totalSize int64
 
+	// Initialize log file
+	logPath := filepath.Join(os.TempDir(), "mls-last-run.log")
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err == nil {
+		defer logFile.Close()
+		tp.cleaner.SetLogFile(logFile)
+	}
+
 	for _, t := range targets {
 		if t.Command != "" {
 			fmt.Printf("\n")
@@ -140,9 +148,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	fmt.Printf("\nMode: ")
 	if tp.cleaner.DryRun() {
 		colorDryRun.Print("DRY RUN\n")
-		fmt.Printf("If you want to perform the cleaning, run: `mls clean --dry-run=false` (or use --confirm)\n")
+		fmt.Printf("If you want to perform the cleaning, run: `mls clean --confirm` (or use --dry-run=false)\n")
 	} else {
 		colorSuccess.Print("LIVE\n")
 	}
+
+	logPath = filepath.Join(os.TempDir(), "mls-last-run.log")
+	fmt.Printf("\nFull log written to: ")
+	colorPath.Println(logPath)
+
 	return nil
 }

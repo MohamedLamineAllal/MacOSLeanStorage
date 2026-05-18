@@ -23,6 +23,7 @@ type Cleaner struct {
 	logger         *zap.Logger
 	dryRun         bool
 	ignorePatterns []string
+	logFile        *os.File
 }
 
 // New creates a new Cleaner
@@ -31,6 +32,17 @@ func New(logger *zap.Logger, dryRun bool, ignorePatterns []string) *Cleaner {
 		logger:         logger,
 		dryRun:         dryRun,
 		ignorePatterns: ignorePatterns,
+	}
+}
+
+// SetLogFile sets the file where full logs will be written
+func (c *Cleaner) SetLogFile(f *os.File) {
+	c.logFile = f
+}
+
+func (c *Cleaner) logToFile(format string, a ...interface{}) {
+	if c.logFile != nil {
+		fmt.Fprintf(c.logFile, format+"\n", a...)
 	}
 }
 
@@ -68,6 +80,12 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 			colorDryRun.Print("  [DRY RUN] ")
 			fmt.Print("Would delete: ")
 			colorPath.Println(path)
+			c.logToFile("[DRY RUN] Would delete: %s", path)
+
+			if info.IsDir() {
+				c.showTruncatedDirContent(path)
+			}
+
 			deletedCount++
 			freedSpace += size
 			continue
@@ -75,6 +93,8 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 
 		colorDelete.Print("  Deleting: ")
 		colorPath.Println(path)
+		c.logToFile("Deleting: %s", path)
+
 		err = os.RemoveAll(path)
 		if err != nil {
 			c.logger.Error("Failed to delete", zap.String("path", path), zap.Error(err))
@@ -85,6 +105,29 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	}
 
 	return deletedCount, freedSpace, nil
+}
+
+func (c *Cleaner) showTruncatedDirContent(path string) {
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return
+	}
+
+	count := 0
+	for _, entry := range entries {
+		if c.isIgnored(entry.Name()) {
+			continue
+		}
+		if count < 5 {
+			fmt.Printf("    - %s\n", entry.Name())
+		}
+		c.logToFile("    - %s", entry.Name())
+		count++
+	}
+
+	if count > 5 {
+		fmt.Printf("    ... and %d more items (see log for details)\n", count-5)
+	}
 }
 
 func (c *Cleaner) getDirSize(path string) (int64, error) {
