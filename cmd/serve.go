@@ -72,7 +72,7 @@ var serveCmd = &cobra.Command{
 		s.Start()
 		defer s.Stop()
 
-		fmt.Printf("Scheduler started with schedule: %s\n", cfg.Schedule)
+		colorSuccess.Printf("Scheduler started with schedule: %s\n", cfg.Schedule)
 		fmt.Println("Press Ctrl+C to stop")
 
 		// Wait for interruption
@@ -80,7 +80,7 @@ var serveCmd = &cobra.Command{
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		<-sigChan
 
-		fmt.Println("\nStopping scheduler...")
+		colorWarning.Println("\nStopping scheduler...")
 		return nil
 	},
 }

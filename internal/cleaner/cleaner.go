@@ -7,7 +7,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/fatih/color"
 	"go.uber.org/zap"
+)
+
+var (
+	colorDryRun = color.New(color.FgHiBlack, color.Italic)
+	colorDelete = color.New(color.FgRed)
+	colorPath   = color.New(color.FgBlue)
+	colorCmd    = color.New(color.FgYellow)
 )
 
 // Cleaner handles the deletion of files
@@ -44,13 +52,16 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 		}
 
 		if c.dryRun {
-			fmt.Printf("  [DRY RUN] Would delete: %s\n", path)
+			colorDryRun.Print("  [DRY RUN] ")
+			fmt.Print("Would delete: ")
+			colorPath.Println(path)
 			deletedCount++
 			freedSpace += size
 			continue
 		}
 
-		fmt.Printf("  Deleting: %s\n", path)
+		colorDelete.Print("  Deleting: ")
+		colorPath.Println(path)
 		err = os.RemoveAll(path)
 		if err != nil {
 			c.logger.Error("Failed to delete", zap.String("path", path), zap.Error(err))
@@ -91,11 +102,14 @@ func (c *Cleaner) getDirSize(path string) (int64, error) {
 // ExecuteCommand runs a shell command
 func (c *Cleaner) ExecuteCommand(command string) error {
 	if c.dryRun {
-		fmt.Printf("  [DRY RUN] Would execute command: %s\n", command)
+		colorDryRun.Print("  [DRY RUN] ")
+		fmt.Print("Would execute command: ")
+		colorCmd.Println(command)
 		return nil
 	}
 
-	fmt.Printf("  Executing command: %s\n", command)
+	fmt.Print("  Executing command: ")
+	colorCmd.Println(command)
 	parts := strings.Fields(command)
 	cmd := exec.Command(parts[0], parts[1:]...)
 	err := cmd.Run()

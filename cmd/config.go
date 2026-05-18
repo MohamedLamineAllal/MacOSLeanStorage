@@ -23,7 +23,8 @@ var openConfigCmd = &cobra.Command{
 			return fmt.Errorf("no configuration file found")
 		}
 
-		fmt.Printf("Opening configuration file in default application: %s\n", configFile)
+		colorInfo.Print("Opening configuration file in default application: ")
+		colorPath.Println(configFile)
 		return exec.Command("open", configFile).Run()
 	},
 }
@@ -37,7 +38,8 @@ var revealConfigCmd = &cobra.Command{
 			return fmt.Errorf("no configuration file found")
 		}
 
-		fmt.Printf("Revealing configuration file in Finder: %s\n", configFile)
+		colorInfo.Print("Revealing configuration file in Finder: ")
+		colorPath.Println(configFile)
 		return exec.Command("open", "-R", configFile).Run()
 	},
 }

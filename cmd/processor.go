@@ -45,7 +45,9 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 
 	for _, t := range targets {
 		if t.Command != "" {
-			fmt.Printf("\nTarget: %s (command: %s)\n", t.Name, t.Command)
+			fmt.Printf("\n")
+			colorTarget.Printf("Target: %s", t.Name)
+			colorCommand.Printf(" (command: %s)\n", t.Command)
 			if t.IntervalDays > 0 {
 				fmt.Printf("  Interval: %d days\n", t.IntervalDays)
 				runTime := "Ready"
@@ -85,13 +87,19 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 			continue
 		}
 
-		fmt.Printf("\nTarget: %s (%s, type: %s)\n", t.Name, t.Path, t.Type)
+		fmt.Printf("\n")
+		colorTarget.Printf("Target: %s", t.Name)
+		fmt.Print(" (")
+		colorPath.Print(t.Path)
+		fmt.Printf(", type: %s)\n", t.Type)
+
 		if len(result.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")
 		} else {
 			if verbose || len(result.Files) <= 10 {
 				for _, file := range result.Files {
-					fmt.Printf("  [MATCH] %s\n", file)
+					colorMatch.Print("  [MATCH] ")
+					fmt.Println(file)
 				}
 			} else {
 				fmt.Printf("  Found %d matches (use --verbose to list all)\n", len(result.Files))
@@ -104,19 +112,22 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	}
 
 	if !isClean {
-		fmt.Printf("\nSummary: Found %d files, total size: %.2f MB, %d commands scheduled\n", len(allPaths), float64(totalSize)/(1024*1024), len(allCommands))
+		fmt.Printf("\n")
+		colorSuccess.Print("Summary: ")
+		fmt.Printf("Found %d files, total size: %.2f MB, %d commands scheduled\n", len(allPaths), float64(totalSize)/(1024*1024), len(allCommands))
 		return nil
 	}
 	// ... (rest of the cleaner logic)
 
 	// Perform cleaning
 	if len(allPaths) > 0 {
-		fmt.Printf("Cleaning %d files...\n", len(allPaths))
+		fmt.Printf("\nCleaning %d files...\n", len(allPaths))
 		count, size, err := tp.cleaner.Clean(allPaths)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Clean Summary: Deleted %d files, freed %.2f MB\n", count, float64(size)/(1024*1024))
+		colorSuccess.Print("Clean Summary: ")
+		fmt.Printf("Deleted %d files, freed %.2f MB\n", count, float64(size)/(1024*1024))
 	}
 
 	for i, cmd := range allCommands {
@@ -126,7 +137,12 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 	}
 
-	fmt.Printf("Mode: %s\n", map[bool]string{true: "DRY RUN", false: "LIVE"}[tp.cleaner.DryRun()])
-	fmt.Printf("If you want to perform the cleaning, run: `mls clean --dry-run=false`")
+	fmt.Printf("\nMode: ")
+	if tp.cleaner.DryRun() {
+		colorDryRun.Print("DRY RUN\n")
+		fmt.Printf("If you want to perform the cleaning, run: `mls clean --dry-run=false` (or use --confirm)\n")
+	} else {
+		colorSuccess.Print("LIVE\n")
+	}
 	return nil
 }
