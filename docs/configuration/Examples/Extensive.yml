@@ -1,10 +1,20 @@
 targets:
   - name: "Arc CacheStorage Cache"
+    path: "~/Library/Application Support/Arc/User Data/**/CacheStorage"
+    threshold_days: 3
+    safety_level: 1
+    type: "both"
+  - name: "Arc CacheStorage Cache sub"
     path: "~/Library/Application Support/Arc/User Data/**/CacheStorage/**"
     threshold_days: 3
     safety_level: 1
     type: "both"
   - name: "Arc File System"
+    path: "~/Library/Application Support/Arc/User Data/**/File System"
+    threshold_days: 3
+    safety_level: 1
+    type: "both"
+  - name: "Arc File System sub"
     path: "~/Library/Application Support/Arc/User Data/**/File System/**"
     threshold_days: 3
     safety_level: 1
