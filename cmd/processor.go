@@ -36,7 +36,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		defer logFile.Close()
 	}
 
-	scanBar := progressbar.NewOptions(len(targets),
+	var scanTargets []config.TargetConfig
+	for _, t := range targets {
+		if t.Command == "" {
+			scanTargets = append(scanTargets, t)
+		}
+	}
+
+	scanBar := progressbar.NewOptions(len(scanTargets),
 		progressbar.OptionSetDescription("Scanning targets..."),
 		progressbar.OptionShowCount(),
 		progressbar.OptionSetTheme(progressbar.Theme{Saucer: "█", SaucerPadding: " ", BarStart: "[", BarEnd: "]"}),
@@ -101,19 +108,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		if tp.engine.Cleaner().DryRun() {
 			desc = "[DRY RUN] Cleaning targets..."
 		}
-		cleanBar := progressbar.NewOptions(len(targets),
+		cleanBar := progressbar.NewOptions(len(scanTargets),
 			progressbar.OptionSetDescription(desc),
 			progressbar.OptionShowCount(),
 			progressbar.OptionSetTheme(progressbar.Theme{Saucer: "█", SaucerPadding: " ", BarStart: "[", BarEnd: "]"}),
 			progressbar.OptionSetPredictTime(false),
 		)
-
-		cleanHooks := hooks
-		cleanHooks.OnTargetScanStart = func(name string, path string) {
-			cleanBar.Add(1)
-		}
-
-		uniqueCount, totalSize, err = tp.engine.Clean(resultMap, targets, cleanHooks)
+		
+		uniqueCount, totalSize, err = tp.engine.Clean(resultMap, targets, hooks)
 		cleanBar.Finish()
 		if err != nil {
 			return err
@@ -130,7 +132,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 
 	for _, t := range targets {
 		if t.Command != "" {
-			tp.handleCommand(t, nil, nil)
+			tp.handleCommand(t)
 		}
 	}
 	return nil
@@ -155,7 +157,7 @@ func (tp *TargetProcessor) printSummary(count int, size int64, isClean bool, log
 	}
 }
 
-func (tp *TargetProcessor) handleCommand(t config.TargetConfig, allCommands *[]string, commandNames *[]string) {
+func (tp *TargetProcessor) handleCommand(t config.TargetConfig) {
 	fmt.Printf("\n")
 	colorTarget.Printf("Target: %s", t.Name)
 	colorCommand.Printf(" (command: %s)\n", t.Command)
