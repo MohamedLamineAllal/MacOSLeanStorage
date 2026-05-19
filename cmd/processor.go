@@ -95,11 +95,9 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	}
 
 
-	// Queue scan jobs, handle commands sequentially to avoid scheduler race conditions
+	// Queue scan jobs only
 	for _, t := range targets {
-		if t.Command != "" {
-			tp.handleCommand(t, &allCommands, &commandNames)
-		} else {
+		if t.Command == "" {
 			jobs <- t
 		}
 	}
@@ -107,11 +105,8 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	wg.Wait()
 	close(results)
 
-	// Process aggregated results sequentially to maintain deterministic output order and logging logic
-	
-	// Map to track all unique files found across all targets
+	// Process aggregated scan results
 	uniqueFiles := make(map[string]int64) 
-	
 	for res := range results {
 		if res.Err != nil {
 			tp.logger.Error("Scan failed for target", zap.String("name", res.Config.Name), zap.Error(res.Err))
@@ -124,34 +119,46 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		colorPath.Print(res.Config.Path)
 		fmt.Printf(", type: %s)\n", res.Config.Type)
 
-		// Log matched files to audit file (for this target)
+		// Log matched files to audit file
 		if len(res.Res.Files) > 0 && logFile != nil {
 			for _, file := range res.Res.Files {
 				fmt.Fprintf(logFile, "  [MATCH] %s (Target: %s)\n", file, res.Config.Name)
 			}
 		}
 
-		// Calculate unique files for this target (ignoring global duplicates for now)
+		// Track unique files for stats
 		for _, file := range res.Res.Files {
-			// Add to global set if not already present
 			if _, exists := uniqueFiles[file]; !exists {
 				uniqueFiles[file] = 0 
 			}
 		}
 
-		// Display scan status to CLI
 		if len(res.Res.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")
 		} else {
-			fmt.Printf("  %d files will be processed, target total size: %.2f MB\n", len(res.Res.Files), float64(res.Res.TotalSize)/(1024*1024))
+			if isClean {
+				fmt.Printf("  %d files will be deleted, freeing %.2f MB\n", len(res.Res.Files), float64(res.Res.TotalSize)/(1024*1024))
+			} else {
+				fmt.Printf("  Found %d files, total size: %.2f MB\n", len(res.Res.Files), float64(res.Res.TotalSize)/(1024*1024))
+			}
 		}
 
-		// Execute actual deletion if instructed
+		// Perform cleanup if instructed
 		if isClean && len(res.Res.Files) > 0 {
 			_, _, err := tp.cleaner.Clean(res.Res.Files)
 			if err != nil {
 				tp.logger.Error("Clean failed for target", zap.String("name", res.Config.Name), zap.Error(err))
 			}
+		}
+
+		allPaths = append(allPaths, res.Res.Files...)
+		totalSize += res.Res.TotalSize
+	}
+
+	// After all scanning and cleaning, run scheduled commands
+	for _, t := range targets {
+		if t.Command != "" {
+			tp.handleCommand(t, &allCommands, &commandNames)
 		}
 	}
 
