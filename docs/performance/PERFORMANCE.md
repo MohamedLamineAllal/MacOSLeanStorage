@@ -31,9 +31,16 @@ The `mls` tool uses a combination of pattern-based globbing and recursive depth-
     - **Optimization - Fast Exit**: During the scan, if a folder is marked as "stale" (based on its mtime or its contents' staleness), `mls` treats it as a single deleteable unit. This prevents the scanner from wasting I/O by walking thousands of files inside a directory that will be deleted anyway.
     - **Ignore Pattern Enforcement**: At every step of the walk, the scanner checks the entry name against `ignorePatterns` (e.g., `.DS_Store`, `.git`, `.fseventsd`). If an entry is ignored, the scanner skips it and any of its children entirely.
 
-### Why This Strategy Is Optimal
-- **I/O Efficiency**: By using `os.ReadDir`, we fetch directory entries (names and types) in a single system call rather than performing `Lstat` on every single file, significantly reducing kernel overhead.
-- **Safety**:
-    - **Permission Handling**: The `walkFiles` implementation explicitly catches `os.IsPermission(err)` and treats it as a partial scan rather than a failure, ensuring we clean what we can even if some subfolders are protected.
-    - **Staleness Logic**: The recursive `checkStaleness` function ensures that a directory is only marked "stale" if *all* its contents are stale, preventing the premature deletion of active, recent files.
-- **Accuracy**: By separating the globbing phase (high-level path discovery) from the recursive traversal (deep content staleness analysis), we guarantee that all files covered by a glob are visited, while the staleness logic keeps the actual cleanup safe.
+## Parallel Deletion Implementation
+
+To match the high-performance scanning, the `clean` operation now also utilizes a parallel worker pool.
+
+### How Parallel Deletion Works
+1. **Worker Distribution**: When `Clean(paths)` is called, the tool calculates the available CPU cores using `runtime.NumCPU()`.
+2. **Path Channel**: A buffered channel distributes the list of files and directories to be deleted to a pool of worker goroutines.
+3. **Parallel I/O**: Each worker concurrently executes `os.RemoveAll(path)` and calculates file sizes, effectively parallelizing the I/O-bound cleanup process.
+4. **Result Aggregation**: A result channel safely collects the number of deleted items and the space freed from all workers, which the main thread then aggregates into the final cleanup summary.
+
+### Performance Benefits
+- **I/O Saturating**: By deleting files in parallel, the tool can better saturate the filesystem's I/O bandwidth, which is particularly beneficial when deleting thousands of small cache files across different directories.
+- **Latency Reduction**: Total deletion time is reduced from a sequential crawl to near-parallel hardware limits.

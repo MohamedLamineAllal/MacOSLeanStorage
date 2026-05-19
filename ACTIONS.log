@@ -30,3 +30,4 @@ Action: Reordered execution flow to prioritize file-system scans before schedule
 Action: Optimized result deduplication using a new ResultAggregator abstraction. Added thread-safe file path tracking and improved memory efficiency.
 Action: Added comprehensive tests for ResultAggregator to cmd/aggregator_test.go covering deduplication and concurrency. Verified logic with tests.
 Action: Refactored Cleaner to use parallel worker pool for deletion. All cleanup tasks are now concurrent, significantly improving speed.
+Action: Documented Parallel Deletion implementation in docs/performance/PERFORMANCE.md. Added Git commit to finalize.
