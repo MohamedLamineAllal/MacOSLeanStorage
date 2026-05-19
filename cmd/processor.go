@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/engine"
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler"
@@ -139,7 +140,7 @@ func (tp *TargetProcessor) printSummary(count int, size int64, isClean bool, log
 	}
 	if count > 0 {
 		fmt.Printf("Full log written to: ")
-		colorPath.Println(logPath)
+		color.New(color.FgHiYellow, color.Underline).Println(logPath)
 	}
 }
 
