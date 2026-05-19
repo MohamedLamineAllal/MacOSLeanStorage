@@ -126,8 +126,8 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 			}
 		}
 
-		// Track unique files for stats
-		aggregator.Add(res.Res.Files, res.Res.TotalSize)
+		// Add files to aggregator
+		aggregator.Add(res.Res.Files, res.Res.FileSizes)
 
 		if len(res.Res.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")

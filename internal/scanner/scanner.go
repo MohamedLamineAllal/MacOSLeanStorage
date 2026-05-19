@@ -20,11 +20,11 @@ type Target struct {
 	SafetyLevel int
 	Type        string // "file", "folder", or "both"
 }
-
 // Result contains the aggregated findings about a scanned target.
 type Result struct {
 	TargetName string
 	Files      []string
+	FileSizes  []int64
 	TotalSize  int64
 }
 
@@ -75,6 +75,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 	result := &Result{
 		TargetName: target.Name,
 		Files:      []string{},
+		FileSizes:  []int64{},
 	}
 
 	now := time.Now()
@@ -98,6 +99,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 					s.logger.Debug("Failed to calculate directory size", zap.String("path", p), zap.Error(err))
 				}
 				result.Files = append(result.Files, p)
+				result.FileSizes = append(result.FileSizes, size)
 				result.TotalSize += size
 				// Skip manual file-by-file walk since the whole folder is marked for deletion
 				continue
@@ -108,13 +110,14 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 		if target.Type == "file" || target.Type == "both" {
 			if info.IsDir() {
 				// Recursively crawl directory if staleness check wasn't met
-				err = s.walkFiles(p, target.Threshold, &result.Files, &result.TotalSize, now)
+				err = s.walkFiles(p, target.Threshold, &result.Files, &result.FileSizes, &result.TotalSize, now)
 				if err != nil {
 					s.logger.Debug("Failed to walk files", zap.String("path", p), zap.Error(err))
 				}
 			} else if now.Sub(info.ModTime()) > target.Threshold {
 				// Individual file case
 				result.Files = append(result.Files, p)
+				result.FileSizes = append(result.FileSizes, info.Size())
 				result.TotalSize += info.Size()
 			}
 		}
@@ -124,7 +127,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 }
 
 // walkFiles recursively traverses a directory to find individual files that exceed the staleness threshold.
-func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]string, totalSize *int64, now time.Time) error {
+func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]string, sizes *[]int64, totalSize *int64, now time.Time) error {
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		// Ignore permission errors to allow partial scans of protected sub-folders
@@ -147,13 +150,14 @@ func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]str
 
 		if entry.IsDir() {
 			// Recursive step
-			if err := s.walkFiles(fullPath, threshold, matches, totalSize, now); err != nil {
+			if err := s.walkFiles(fullPath, threshold, matches, sizes, totalSize, now); err != nil {
 				s.logger.Debug("Subdirectory walk failed", zap.String("path", fullPath), zap.Error(err))
 			}
 		} else {
 			// Check individual file age against the threshold
 			if now.Sub(info.ModTime()) > threshold {
 				*matches = append(*matches, fullPath)
+				*sizes = append(*sizes, info.Size())
 				*totalSize += info.Size()
 			}
 		}

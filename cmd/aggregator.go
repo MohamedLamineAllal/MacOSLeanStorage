@@ -8,28 +8,28 @@ import (
 // It uses a map to deduplicate paths, preventing memory-intensive path duplication.
 type ResultAggregator struct {
 	mu           sync.RWMutex
-	uniquePaths  map[string]struct{}
+	uniquePaths  map[string]int64
 	totalSize    int64
 }
 
 // NewResultAggregator creates a new ResultAggregator.
 func NewResultAggregator() *ResultAggregator {
 	return &ResultAggregator{
-		uniquePaths: make(map[string]struct{}),
+		uniquePaths: make(map[string]int64),
 	}
 }
 
 // Add appends results from a scanner, deduplicating paths and adding size.
-func (ra *ResultAggregator) Add(files []string, size int64) {
+func (ra *ResultAggregator) Add(files []string, sizes []int64) {
 	ra.mu.Lock()
 	defer ra.mu.Unlock()
 
-	for _, file := range files {
+	for i, file := range files {
 		if _, exists := ra.uniquePaths[file]; !exists {
-			ra.uniquePaths[file] = struct{}{}
+			ra.uniquePaths[file] = sizes[i]
+			ra.totalSize += sizes[i]
 		}
 	}
-	ra.totalSize += size
 }
 
 // GetStats returns the unique file count and aggregated size.
