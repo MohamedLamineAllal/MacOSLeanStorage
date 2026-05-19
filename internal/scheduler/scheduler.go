@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/mohamedlamineallal/MacosLeanStorage/internal/utils"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )
@@ -27,19 +28,8 @@ func New(logger *zap.Logger) *Scheduler {
 		cron:   cron.New(cron.WithSeconds()),
 		logger: logger,
 	}
-	s.statePath = filepath.Join(s.getBaseStatePath(), "mls-global.lastrun")
+	s.statePath = filepath.Join(utils.GetAppCacheDir(), "mls-global.lastrun")
 	return s
-}
-
-// getBaseStatePath returns the path where command run states are stored, ensuring the directory exists.
-func (s *Scheduler) getBaseStatePath() string {
-	cache, err := os.UserCacheDir()
-	if err != nil {
-		cache = os.TempDir()
-	}
-	path := filepath.Join(cache, "mls")
-	_ = os.MkdirAll(path, 0755)
-	return path
 }
 
 // ShouldRunCommand determines if a command should be executed based on its name and configured interval.
@@ -49,7 +39,7 @@ func (s *Scheduler) ShouldRunCommand(commandName string, intervalDays int) bool 
 		return true
 	}
 
-	statePath := filepath.Join(s.getBaseStatePath(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
+	statePath := filepath.Join(utils.GetAppCacheDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	data, err := os.ReadFile(statePath)
 
 	if err != nil {
@@ -66,7 +56,7 @@ func (s *Scheduler) ShouldRunCommand(commandName string, intervalDays int) bool 
 
 // UpdateCommandRunTime records the current time as the last run time for the specified command.
 func (s *Scheduler) UpdateCommandRunTime(commandName string) {
-	statePath := filepath.Join(s.getBaseStatePath(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
+	statePath := filepath.Join(utils.GetAppCacheDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	_ = os.WriteFile(statePath, []byte(time.Now().Format(time.RFC3339)), 0644)
 }
 
@@ -76,7 +66,7 @@ func (s *Scheduler) GetNextRunTime(commandName string, intervalDays int) (time.T
 		return time.Now(), nil
 	}
 
-	statePath := filepath.Join(s.getBaseStatePath(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
+	statePath := filepath.Join(utils.GetAppCacheDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	data, err := os.ReadFile(statePath)
 	if err != nil {
 		return time.Now(), nil
