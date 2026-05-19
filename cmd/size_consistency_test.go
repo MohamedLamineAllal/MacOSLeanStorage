@@ -78,9 +78,8 @@ assert.NotNil(t, result)
 assert.Equal(t, int64(40), result.TotalSize)
 
 // 2. Run the cleaner part
-count, size, err := tp.cleaner.Clean(result.Files)
+count, size, err := tp.engine.Cleaner().CleanWithHook(result.Files, nil)
 assert.NoError(t, err)
-
 // Both should report exactly 40 bytes
 assert.Equal(t, int64(2), int64(count))
 assert.Equal(t, result.TotalSize, size, "Scan and Clean sizes should match exactly")

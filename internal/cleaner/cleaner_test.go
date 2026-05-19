@@ -23,7 +23,7 @@ func TestClean(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := New(zap.NewNop(), false, nil) // Not dry run
-	count, size, err := c.Clean([]string{file1, file2})
+	count, size, err := c.CleanWithHook([]string{file1, file2}, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, count)
 	assert.Equal(t, int64(16), size)
@@ -44,7 +44,7 @@ func TestCleanDryRun(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := New(zap.NewNop(), true, nil) // Dry run
-	count, size, err := c.Clean([]string{file1})
+	count, size, err := c.CleanWithHook([]string{file1}, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, int64(8), size)

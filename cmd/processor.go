@@ -84,7 +84,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 
 		if isClean && len(res.Files) > 0 {
-			_, _, err := tp.cleaner.Clean(res.Files)
+			_, _, err := tp.engine.Cleaner().CleanWithHook(res.Files, nil)
 			if err != nil {
 				tp.logger.Error("Clean failed for target", zap.String("name", t.Name), zap.Error(err))
 			}
@@ -105,7 +105,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		return nil
 	}
 
-	if tp.cleaner.DryRun() && uniqueCount > 0 {
+	if tp.engine.Cleaner().DryRun() && uniqueCount > 0 {
 		fmt.Printf("\nDetails:")
 		if uniqueCount <= 20 {
 			fmt.Printf("\n")
@@ -128,14 +128,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	}
 
 	for i, cmd := range allCommands {
-		err := tp.cleaner.ExecuteCommand(cmd)
+		err := tp.engine.Cleaner().ExecuteCommand(cmd)
 		if err == nil {
 			tp.scheduler.UpdateCommandRunTime(commandNames[i])
 		}
 	}
 
 	fmt.Printf("\nMode: ")
-	if tp.cleaner.DryRun() {
+	if tp.engine.Cleaner().DryRun() {
 		colorDryRun.Print("DRY RUN\n")
 		fmt.Printf("To perform the actual cleaning, run: `mls clean --dry-run=false` (or --confirm)\n")
 	} else {

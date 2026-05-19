@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"os"
 	"runtime"
 	"sync"
 	"time"
@@ -36,45 +35,30 @@ func NewEngine(logger *zap.Logger, ignorePatterns []string, dryRun bool) *Engine
 	}
 }
 
+// Hooks defines the callback interface for engine events.
+type Hooks struct {
+	OnTargetScanStart func(name string, path string)
+	OnMatchFound      func(targetName string, files []string)
+	OnFileCleaned     func(path string, freed int64, err error)
+}
+
 // RunOptions configures the execution of the Engine.
 type RunOptions struct {
-	IsClean  bool
-	DryRun   bool
-	LogFile  *os.File
-	OnEvent  func(event LogEvent) // Callback for UI/CLI feedback
-}
-
-// ResultAggregator tracks unique file stats.
-type ResultAggregator struct {
-	mu           sync.RWMutex
-	uniquePaths  map[string]int64
-	totalSize    int64
-}
-
-func (ra *ResultAggregator) Add(files []string, sizes []int64) {
-	ra.mu.Lock()
-	defer ra.mu.Unlock()
-	for i, file := range files {
-		if _, exists := ra.uniquePaths[file]; !exists {
-			ra.uniquePaths[file] = sizes[i]
-			ra.totalSize += sizes[i]
-		}
-	}
+	IsClean bool
+	DryRun  bool
+	Hooks   Hooks
 }
 
 // Run executes the full scan/clean pipeline.
 func (e *Engine) Run(targets []config.TargetConfig, opts RunOptions) (int, int64, error) {
 	e.cleaner.SetDryRun(opts.DryRun)
-	if opts.LogFile != nil {
-		e.cleaner.SetLogFile(opts.LogFile)
-	}
 
 	resultMap := e.ScanTargets(targets)
 	aggregator := &ResultAggregator{uniquePaths: make(map[string]int64)}
 
 	for _, t := range targets {
 		if t.Command != "" {
-			continue // Command execution handled at processor level
+			continue
 		}
 
 		res, ok := resultMap[t.Name]
@@ -82,14 +66,19 @@ func (e *Engine) Run(targets []config.TargetConfig, opts RunOptions) (int, int64
 			continue
 		}
 
-		if opts.OnEvent != nil {
-			opts.OnEvent(LogEvent{Type: "target_start", Message: t.Name, Path: t.Path})
+		if opts.Hooks.OnTargetScanStart != nil {
+			opts.Hooks.OnTargetScanStart(t.Name, t.Path)
+		}
+
+		if opts.Hooks.OnMatchFound != nil {
+			opts.Hooks.OnMatchFound(t.Name, res.Files)
 		}
 
 		aggregator.Add(res.Files, res.FileSizes)
 
 		if opts.IsClean && len(res.Files) > 0 {
-			_, _, err := e.cleaner.Clean(res.Files)
+			// Refactor Clean to optionally accept a hook
+			_, _, err := e.cleaner.CleanWithHook(res.Files, opts.Hooks.OnFileCleaned)
 			if err != nil {
 				e.logger.Error("Clean failed", zap.String("target", t.Name), zap.Error(err))
 			}
@@ -99,6 +88,7 @@ func (e *Engine) Run(targets []config.TargetConfig, opts RunOptions) (int, int64
 	uniqueCount := len(aggregator.uniquePaths)
 	return uniqueCount, aggregator.totalSize, nil
 }
+
 
 // ScanTargets processes multiple targets in parallel and returns scan results.
 func (e *Engine) ScanTargets(targets []config.TargetConfig) map[string]*scanner.Result {
@@ -154,4 +144,40 @@ func (e *Engine) ScanTargets(targets []config.TargetConfig) map[string]*scanner.
 // Cleaner returns the underlying Cleaner instance.
 func (e *Engine) Cleaner() *cleaner.Cleaner {
 	return e.cleaner
+}
+
+// ResultAggregator tracks unique file stats.
+type ResultAggregator struct {
+	mu           sync.RWMutex
+	uniquePaths  map[string]int64
+	totalSize    int64
+}
+
+func (ra *ResultAggregator) Add(files []string, sizes []int64) {
+	ra.mu.Lock()
+	defer ra.mu.Unlock()
+	for i, file := range files {
+		if _, exists := ra.uniquePaths[file]; !exists {
+			ra.uniquePaths[file] = sizes[i]
+			ra.totalSize += sizes[i]
+		}
+	}
+}
+
+// GetStats returns the unique file count and aggregated size.
+func (ra *ResultAggregator) GetStats() (int, int64) {
+	ra.mu.RLock()
+	defer ra.mu.RUnlock()
+	return len(ra.uniquePaths), ra.totalSize
+}
+
+// GetUniquePaths returns the list of all unique file paths.
+func (ra *ResultAggregator) GetUniquePaths() []string {
+	ra.mu.RLock()
+	defer ra.mu.RUnlock()
+	paths := make([]string, 0, len(ra.uniquePaths))
+	for path := range ra.uniquePaths {
+		paths = append(paths, path)
+	}
+	return paths
 }

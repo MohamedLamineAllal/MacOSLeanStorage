@@ -65,11 +65,12 @@ func (c *Cleaner) isIgnored(name string) bool {
 	return false
 }
 
-// Clean deletes the provided list of file paths in parallel.
-func (c *Cleaner) Clean(paths []string) (int, int64, error) {
+// CleanWithHook deletes the provided list of file paths in parallel, invoking a hook for each file.
+func (c *Cleaner) CleanWithHook(paths []string, hook func(path string, freed int64, err error)) (int, int64, error) {
 	numWorkers := runtime.NumCPU()
 	pathChan := make(chan string, len(paths))
 	type result struct {
+		path  string
 		freed int64
 		err   error
 	}
@@ -83,6 +84,9 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 			for path := range pathChan {
 				info, err := os.Stat(path)
 				if err != nil {
+					if hook != nil {
+						hook(path, 0, err)
+					}
 					c.logger.Debug("Failed to stat path", zap.String("path", path), zap.Error(err))
 					continue
 				}
@@ -94,22 +98,20 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 					size = info.Size()
 				}
 
-				// Log to file always
-				prefix := ""
-				if c.dryRun {
-					prefix = "[DRY RUN] "
-				}
-				c.logToFile("%sWould delete: %s", prefix, path)
-
 				if !c.dryRun {
 					err = os.RemoveAll(path)
 					if err != nil {
 						c.logger.Error("Failed to delete", zap.String("path", path), zap.Error(err))
-						resChan <- result{0, err}
+						if hook != nil {
+							hook(path, 0, err)
+						}
 						continue
 					}
 				}
-				resChan <- result{size, nil}
+				if hook != nil {
+					hook(path, size, nil)
+				}
+				resChan <- result{path, size, nil}
 			}
 		}()
 	}
@@ -119,7 +121,6 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	}
 	close(pathChan)
 
-	// Wait for workers in a separate goroutine to close resChan
 	go func() {
 		wg.Wait()
 		close(resChan)
@@ -128,10 +129,8 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	var deletedCount int
 	var freedSpace int64
 	for res := range resChan {
-		if res.err == nil {
-			deletedCount++
-			freedSpace += res.freed
-		}
+		deletedCount++
+		freedSpace += res.freed
 	}
 
 	return deletedCount, freedSpace, nil
