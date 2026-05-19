@@ -65,8 +65,8 @@ func (c *Cleaner) isIgnored(name string) bool {
 	return false
 }
 
-// CleanWithHook deletes the provided list of file paths in parallel, invoking a hook for each file.
-func (c *Cleaner) CleanWithHook(paths []string, hook func(path string, freed int64, err error)) (int, int64, error) {
+// Clean deletes the provided list of file paths in parallel, invoking a hook for each file.
+func (c *Cleaner) Clean(paths []string, hook func(path string, freed int64, err error)) (int, int64, error) {
 	numWorkers := runtime.NumCPU()
 	pathChan := make(chan string, len(paths))
 	type result struct {

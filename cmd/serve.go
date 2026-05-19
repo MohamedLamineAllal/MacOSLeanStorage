@@ -57,7 +57,7 @@ var serveCmd = &cobra.Command{
 			}
 
 			if len(allPaths) > 0 {
-				_, _, err := cl.CleanWithHook(allPaths, nil)
+				_, _, err := cl.Clean(allPaths, nil)
 				return err
 			}
 			logger.Info("No files found to clean")

@@ -78,7 +78,7 @@ assert.NotNil(t, result)
 assert.Equal(t, int64(40), result.TotalSize)
 
 // 2. Run the cleaner part
-count, size, err := tp.engine.Cleaner().CleanWithHook(result.Files, nil)
+count, size, err := tp.engine.Cleaner().Clean(result.Files, nil)
 assert.NoError(t, err)
 // Both should report exactly 40 bytes
 assert.Equal(t, int64(2), int64(count))

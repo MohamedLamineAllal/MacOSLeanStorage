@@ -76,7 +76,8 @@ func (e *Engine) Clean(resultMap map[string]*scanner.Result, targets []config.Ta
 
 		aggregator.Add(res.Files, res.FileSizes)
 
-		_, _, err := e.cleaner.CleanWithHook(res.Files, hooks.OnFileCleaned)
+		_, _, err := e.cleaner.Clean(res.Files, hooks.OnFileCleaned)
+
 		if err != nil {
 			e.logger.Error("Clean failed", zap.String("target", t.Name), zap.Error(err))
 		}

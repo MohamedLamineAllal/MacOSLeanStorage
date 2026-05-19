@@ -84,7 +84,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 
 		if isClean && len(res.Files) > 0 {
-			_, _, err := tp.engine.Cleaner().CleanWithHook(res.Files, nil)
+			_, _, err := tp.engine.Cleaner().Clean(res.Files, nil)
 			if err != nil {
 				tp.logger.Error("Clean failed for target", zap.String("name", t.Name), zap.Error(err))
 			}
