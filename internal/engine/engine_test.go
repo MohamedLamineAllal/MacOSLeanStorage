@@ -11,7 +11,7 @@ import (
 
 func TestEngine_CleanParallel(t *testing.T) {
 	logger := zap.NewNop()
-	e := New(logger, nil, false)
+	e := NewDefault(logger, nil, false)
 
 	targets := []config.TargetConfig{
 		{Name: "T1", Path: "/path/1"},

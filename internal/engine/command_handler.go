@@ -63,11 +63,14 @@ func (ch *CommandHandler) Handle(t config.TargetConfig, hooks CommandHooks) {
 
 // ExecuteCommand runs a shell command unless dry-run mode is enabled.
 func (ch *CommandHandler) ExecuteCommand(command string) error {
-	if ch.engine.cleaner.DryRun() {
+	if ch.engine.Cleaner().DryRun() {
 		return nil
 	}
 
 	parts := strings.Fields(command)
+	if len(parts) == 0 {
+		return nil
+	}
 	cmd := exec.Command(parts[0], parts[1:]...)
 	err := cmd.Run()
 	if err != nil {

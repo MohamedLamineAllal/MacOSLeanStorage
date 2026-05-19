@@ -11,6 +11,17 @@ import (
 	"go.uber.org/zap"
 )
 
+// ScannerInterface abstracts the scanner functionality
+type ScannerInterface interface {
+	Scan(target scanner.Target, ignorePatterns []string) (*scanner.Result, error)
+}
+
+// CleanerInterface abstracts the cleaner functionality
+type CleanerInterface interface {
+	Clean(paths []string, hook func(path string, freed int64, err error)) (int, int64, error)
+	DryRun() bool
+}
+
 // Hooks provides lifecycle callbacks for engine operations.
 type Hooks struct {
 	OnTargetScanStart          func(name string, path string)
@@ -26,23 +37,23 @@ type Hooks struct {
 
 // Engine encapsulates the scanning and cleaning logic.
 type Engine struct {
-	scanner        *scanner.Scanner
-	cleaner        *cleaner.Cleaner
+	scanner        ScannerInterface
+	cleaner        CleanerInterface
 	commandHandler *CommandHandler
 	logger         *zap.Logger
 }
 
-// New creates a new Engine instance.
-func New(logger *zap.Logger, ignorePatterns []string, dryRun bool) *Engine {
-	e := &Engine{
-		scanner: scanner.New(logger, ignorePatterns),
-		cleaner: cleaner.New(logger, dryRun, ignorePatterns),
-		logger:  logger,
+// New creates a new Engine instance with the provided dependencies.
+func New(logger *zap.Logger, s ScannerInterface, c CleanerInterface, commandHandler *CommandHandler) *Engine {
+	return &Engine{
+		scanner:        s,
+		cleaner:        c,
+		commandHandler: commandHandler,
+		logger:         logger,
 	}
-	// Note: We'll initialize commandHandler separately or pass a scheduler if needed.
-	// For now, keeping it simple as per original design.
-	return e
 }
+
+// ... rest of the file
 
 // SetCommandHandler allows injecting the command handler.
 func (e *Engine) SetCommandHandler(ch *CommandHandler) {
@@ -220,6 +231,16 @@ func (ra *ResultAggregator) GetStats() (int, int64) {
 }
 
 // Cleaner returns the underlying Cleaner instance.
-func (e *Engine) Cleaner() *cleaner.Cleaner {
+func (e *Engine) Cleaner() CleanerInterface {
 	return e.cleaner
+}
+
+// NewDefault creates a new Engine instance with the default scanner and cleaner.
+// This is used for backward compatibility.
+func NewDefault(logger *zap.Logger, ignorePatterns []string, dryRun bool) *Engine {
+	return &Engine{
+		scanner: scanner.New(logger, ignorePatterns),
+		cleaner: cleaner.New(logger, dryRun, ignorePatterns),
+		logger:  logger,
+	}
 }

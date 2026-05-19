@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
@@ -17,23 +18,46 @@ func (m *MockScheduler) ShouldRunCommand(name string, intervalDays int) bool {
 }
 func (m *MockScheduler) UpdateCommandRunTime(name string) {}
 
-func TestCommandHandler_Handle(t *testing.T) {
+func TestCommandHandler_Handle_DryRun(t *testing.T) {
 	logger := zap.NewNop()
-	e := New(logger, nil, false)
-	s := &scheduler.Scheduler{} // Note: In a real scenario, mock this properly if possible
+	// MockCleaner with DryRun=true
+	cleaner := &MockCleaner{dryRun: true}
+	e := New(logger, &MockScanner{}, cleaner, nil)
+	s := &scheduler.Scheduler{} 
 	ch := NewCommandHandler(e, s, logger)
 
 	target := config.TargetConfig{
-		Name:         "TestTarget",
-		Command:      "echo hello",
-		IntervalDays: 1,
+		Name:    "DryRunTarget",
+		Command: "false", // This would fail if executed
 	}
 
+	// Should not panic or error
+	ch.Handle(target, CommandHooks{})
+}
+
+func TestCommandHandler_HookSequence(t *testing.T) {
+	logger := zap.NewNop()
+	e := New(logger, &MockScanner{}, &MockCleaner{dryRun: false}, nil)
+	s := &scheduler.Scheduler{}
+	ch := NewCommandHandler(e, s, logger)
+
+	var sequence []string
+	var mu sync.Mutex
+	
+	target := config.TargetConfig{
+		Name:    "HookTarget",
+		Command: "echo hello",
+	}
+	
 	hooks := CommandHooks{
-		BeforeExecutingCommand: func(name, command string) {
-			assert.Equal(t, "TestTarget", name)
-		},
+		BeforeHandleCommand:    func(name, cmd string, should bool) { mu.Lock(); sequence = append(sequence, "before_handle"); mu.Unlock() },
+		BeforeExecutingCommand: func(name, cmd string) { mu.Lock(); sequence = append(sequence, "before_exec"); mu.Unlock() },
+		AfterExecutingCommand:  func(name, cmd string, err error) { mu.Lock(); sequence = append(sequence, "after_exec"); mu.Unlock() },
+		AfterHandleCommand:     func(name, cmd string, err error) { mu.Lock(); sequence = append(sequence, "after_handle"); mu.Unlock() },
 	}
 
 	ch.Handle(target, hooks)
+
+	expected := []string{"before_handle", "before_exec", "after_exec", "after_handle"}
+	assert.Equal(t, expected, sequence)
 }
