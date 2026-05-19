@@ -2,56 +2,51 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"strconv"
+	"strings"
+	"syscall"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-// configCmd represents the config command which provides subcommands for
-// managing the application's configuration.
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Manage MacosLeanStorage configuration",
+	Short: "Manage configuration",
 }
 
-// openConfigCmd represents the "config open" subcommand which opens the
-// configuration file in the system's default text editor or application.
-var openConfigCmd = &cobra.Command{
-	Use:   "open",
-	Short: "Open the configuration file in the default application",
+var reloadCmd = &cobra.Command{
+	Use:   "reload",
+	Short: "Reload the configuration for the running background agent",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		configFile := viper.ConfigFileUsed()
-		if configFile == "" {
-			return fmt.Errorf("no configuration file found")
+		// Find the PID of the running mls serve process
+		pid, err := findMLSServePID()
+		if err != nil {
+			return fmt.Errorf("could not find running mls serve process: %w", err)
 		}
 
-		colorInfo.Print("Opening configuration file in default application: ")
-		colorPath.Println(configFile)
-		return exec.Command("open", configFile).Run()
+		// Send SIGHUP to the process
+		process, err := os.FindProcess(pid)
+		if err != nil {
+			return err
+		}
+		err = process.Signal(os.Interrupt) // SIGHUP is not directly supported on all platforms via os.Signal, but we can use syscall
+		// Using syscall for SIGHUP
+		return process.Signal(syscall.SIGHUP)
 	},
 }
 
-// revealConfigCmd represents the "config reveal" subcommand which opens the
-// directory containing the configuration file in Finder.
-var revealConfigCmd = &cobra.Command{
-	Use:   "reveal",
-	Short: "Reveal the configuration file in Finder",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		configFile := viper.ConfigFileUsed()
-		if configFile == "" {
-			return fmt.Errorf("no configuration file found")
-		}
-
-		colorInfo.Print("Revealing configuration file in Finder: ")
-		colorPath.Println(configFile)
-		return exec.Command("open", "-R", configFile).Run()
-	},
+func findMLSServePID() (int, error) {
+	out, err := exec.Command("pgrep", "-f", "mls serve").Output()
+	if err != nil {
+		return 0, err
+	}
+	pidStr := strings.TrimSpace(string(out))
+	return strconv.Atoi(pidStr)
 }
 
-// init adds the config command and its subcommands to the root command.
 func init() {
+	configCmd.AddCommand(reloadCmd)
 	rootCmd.AddCommand(configCmd)
-	configCmd.AddCommand(openConfigCmd)
-	configCmd.AddCommand(revealConfigCmd)
 }

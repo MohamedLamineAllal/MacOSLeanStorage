@@ -78,7 +78,7 @@ var serveCmd = &cobra.Command{
 
 		// Wait for interruption
 		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 		// Periodic check for missed tasks every 30 minutes
 		ticker := time.NewTicker(30 * time.Minute)
@@ -89,8 +89,19 @@ var serveCmd = &cobra.Command{
 				select {
 				case <-ticker.C:
 					s.CheckForMissedTasks(task)
-				case <-sigChan:
-					return
+				case sig := <-sigChan:
+					if sig == syscall.SIGHUP {
+						logger.Info("Reloading configuration...")
+						newCfg, err := config.Load()
+						if err != nil {
+							logger.Error("Failed to reload config", zap.Error(err))
+							continue
+						}
+						cfg = newCfg
+						logger.Info("Configuration reloaded successfully")
+					} else {
+						return
+					}
 				}
 			}
 		}()
