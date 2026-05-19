@@ -34,6 +34,16 @@ func getPlistPath() string {
 	return filepath.Join(home, "Library/LaunchAgents", agentLabel+".plist")
 }
 
+// getAgentUninstallCommand returns the command to unload/bootout the agent.
+func getAgentUninstallCommand(plistPath string) *exec.Cmd {
+	return exec.Command("launchctl", "bootout", "gui/"+fmt.Sprint(os.Getuid()), plistPath)
+}
+
+// getAgentLoadCommand returns the command to load the agent.
+func getAgentLoadCommand(plistPath string) *exec.Cmd {
+	return exec.Command("launchctl", "load", plistPath)
+}
+
 // InstallAgent installs the background launch agent.
 func InstallAgent() error {
 	plistPath := getPlistPath()
@@ -47,7 +57,9 @@ func InstallAgent() error {
 		return err
 	}
 
-	exec.Command("launchctl", "load", plistPath).Run()
+	if err := getAgentLoadCommand(plistPath).Run(); err != nil {
+		return fmt.Errorf("failed to load agent: %w", err)
+	}
 	fmt.Printf("Agent installed: %s\n", plistPath)
 	return nil
 }
@@ -56,7 +68,9 @@ func InstallAgent() error {
 func UninstallAgent() error {
 	plistPath := getPlistPath()
 
-	exec.Command("launchctl", "bootout", "gui/"+fmt.Sprint(os.Getuid()), plistPath).Run()
+	if err := getAgentUninstallCommand(plistPath).Run(); err != nil {
+		return fmt.Errorf("failed to uninstall agent: %w", err)
+	}
 	os.Remove(plistPath)
 
 	fmt.Printf("Agent uninstalled.\n")
@@ -68,7 +82,7 @@ func StartAgent() error {
 	plistPath := getPlistPath()
 
 	// Load the service first
-	exec.Command("launchctl", "load", plistPath).Run()
+	getAgentLoadCommand(plistPath).Run()
 
 	cmd := exec.Command("launchctl", "kickstart", "-k", "gui/"+fmt.Sprint(os.Getuid())+"/"+agentLabel)
 	if err := cmd.Run(); err != nil {
@@ -82,8 +96,7 @@ func StartAgent() error {
 func StopAgent() error {
 	plistPath := getPlistPath()
 
-	cmd := exec.Command("launchctl", "bootout", "gui/"+fmt.Sprint(os.Getuid()), plistPath)
-	if err := cmd.Run(); err != nil {
+	if err := getAgentUninstallCommand(plistPath).Run(); err != nil {
 		return fmt.Errorf("failed to stop agent: %w", err)
 	}
 	fmt.Printf("Agent stopped.\n")
