@@ -27,3 +27,4 @@ Action: Documented Directory Traversal & Globbing strategy in docs/performance/P
 Action: Added detailed architectural explanation of parallel execution safety to docs/performance/CONCURRENCY_EXPLAINED.md.
 Action: Refactored target processing to deduplicate overlapping file paths using a map. Updated CLI summary to report unique file counts for accurate cleanup estimations. Verified integrity with size consistency tests.
 Action: Reordered execution flow to prioritize file-system scans before scheduled command execution. Added result deduplication across targets.
+Action: Optimized result deduplication using a new ResultAggregator abstraction. Added thread-safe file path tracking and improved memory efficiency.

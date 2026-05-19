@@ -106,7 +106,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	close(results)
 
 	// Process aggregated scan results
-	uniqueFiles := make(map[string]int64) 
+	aggregator := NewResultAggregator()
 	for res := range results {
 		if res.Err != nil {
 			tp.logger.Error("Scan failed for target", zap.String("name", res.Config.Name), zap.Error(res.Err))
@@ -127,11 +127,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 
 		// Track unique files for stats
-		for _, file := range res.Res.Files {
-			if _, exists := uniqueFiles[file]; !exists {
-				uniqueFiles[file] = 0 
-			}
-		}
+		aggregator.Add(res.Res.Files, res.Res.TotalSize)
 
 		if len(res.Res.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")
@@ -162,18 +158,16 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 	}
 
-	// Calculate final unique stats
-	finalCount := len(uniqueFiles)
-	// We re-calculate size by aggregating unique files properly in a real scenario,
-	// but for now, we trust the deduplication logic for the count.
+	uniqueCount, totalUniqueSize := aggregator.GetStats()
+	allPaths = aggregator.GetUniquePaths()
 
 	// Final summary for dry-run/preview mode
 	if !isClean {
 		fmt.Printf("\n")
 		colorSuccess.Print("Summary: ")
-		fmt.Printf("Found %d unique files, total size estimation (approx): %.2f MB, %d commands scheduled\n", finalCount, float64(totalSize)/(1024*1024), len(allCommands))
+		fmt.Printf("Found %d unique files, total size estimation (approx): %.2f MB, %d commands scheduled\n", uniqueCount, float64(totalUniqueSize)/(1024*1024), len(allCommands))
 		
-		if len(uniqueFiles) > 0 {
+		if uniqueCount > 0 {
 			fmt.Printf("Full list of matched files available at: ")
 			colorPath.Println(logPath)
 		}
@@ -181,9 +175,9 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	}
 
 	// For CLEAN mode: Handle console output limits
-	if tp.cleaner.DryRun() && len(allPaths) > 0 {
+	if tp.cleaner.DryRun() && uniqueCount > 0 {
 		fmt.Printf("\nDetails:")
-		if len(allPaths) <= 20 {
+		if uniqueCount <= 20 {
 			fmt.Printf("\n")
 			for _, path := range allPaths {
 				colorDryRun.Print("  [DRY RUN] ")
@@ -191,7 +185,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 				colorPath.Println(path)
 			}
 		} else {
-			fmt.Printf(" List of %d files to be deleted is too large for console. Check log for details.\n", len(allPaths))
+			fmt.Printf(" List of %d files to be deleted is too large for console. Check log for details.\n", uniqueCount)
 		}
 	}
 
@@ -199,9 +193,9 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	fmt.Printf("\n")
 	colorSuccess.Print("Clean Summary: ")
 	if tp.cleaner.DryRun() {
-		fmt.Printf("Would delete %d files, freeing %.2f MB\n", len(allPaths), float64(totalSize)/(1024*1024))
+		fmt.Printf("Would delete %d files, freeing %.2f MB\n", uniqueCount, float64(totalUniqueSize)/(1024*1024))
 	} else {
-		fmt.Printf("Deleted %d files, freed %.2f MB\n", len(allPaths), float64(totalSize)/(1024*1024))
+		fmt.Printf("Deleted %d files, freed %.2f MB\n", uniqueCount, float64(totalUniqueSize)/(1024*1024))
 	}
 
 	// Run all scheduled commands
