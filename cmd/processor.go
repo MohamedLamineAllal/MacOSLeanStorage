@@ -175,6 +175,9 @@ func (tp *TargetProcessor) printSummary(count int, size int64, isClean bool, log
 		colorSuccess.Print("Clean Summary: ")
 		if tp.engine.Cleaner().DryRun() {
 			fmt.Printf("[DRY RUN]: Would delete %d files, freeing %.2f MB\n", count, float64(size)/(1024*1024))
+			color.New(color.FgMagenta).Print("\nTo proceed with actual deletion, please run: ")
+			color.New(color.FgHiYellow).Print("`mls clean --dry-run=false`")
+			color.New(color.FgMagenta).Println(".")
 		} else {
 			fmt.Printf("Deleted %d files, freeing %.2f MB\n", count, float64(size)/(1024*1024))
 		}
@@ -183,7 +186,7 @@ func (tp *TargetProcessor) printSummary(count int, size int64, isClean bool, log
 		fmt.Printf("Found %d unique files, total size estimation (approx): %.2f MB\n", count, float64(size)/(1024*1024))
 	}
 	if count > 0 {
-		fmt.Printf("Full log written to: ")
+		fmt.Printf("\nFull details log written to: ")
 		color.New(color.FgHiYellow, color.Underline).Println(logPath)
 	}
 }
