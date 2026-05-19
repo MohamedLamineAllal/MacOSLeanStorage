@@ -32,3 +32,4 @@ Action: Added comprehensive tests for ResultAggregator to cmd/aggregator_test.go
 Action: Refactored Cleaner to use parallel worker pool for deletion. All cleanup tasks are now concurrent, significantly improving speed.
 Action: Documented Parallel Deletion implementation in docs/performance/PERFORMANCE.md. Added Git commit to finalize.
 Action: Finalized modularization into mls-core and ensured target-ordered scan execution.
+Action: Refactored engine API to expose Scan, Clean, ScanAndClean. Integrated hook-based logging throughout.
