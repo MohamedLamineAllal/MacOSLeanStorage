@@ -115,9 +115,34 @@ func (e *Engine) Scan(targets []config.TargetConfig, hooks Hooks) (map[string]*s
 	return resultMap, nil
 }
 
-// Clean executes the cleanup process for the identified scan results.
+// Clean executes the cleanup process for the identified scan results in parallel.
 func (e *Engine) Clean(resultMap map[string]*scanner.Result, targets []config.TargetConfig, hooks Hooks) (int, int64, error) {
 	aggregator := &ResultAggregator{UniquePaths: make(map[string]int64)}
+	numWorkers := runtime.NumCPU()
+	
+	type job struct {
+		target config.TargetConfig
+		res    *scanner.Result
+	}
+	jobs := make(chan job, len(targets))
+	
+	var wg sync.WaitGroup
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := range jobs {
+				aggregator.Add(j.res.Files, j.res.FileSizes)
+				_, _, err := e.cleaner.Clean(j.res.Files, hooks.OnFileCleaned)
+				if err != nil {
+					e.logger.Error("Clean failed", zap.String("target", j.target.Name), zap.Error(err))
+				}
+				if hooks.OnTargetCleaned != nil {
+					hooks.OnTargetCleaned(j.target.Name)
+				}
+			}
+		}()
+	}
 
 	for _, t := range targets {
 		res, ok := resultMap[t.Name]
@@ -127,24 +152,16 @@ func (e *Engine) Clean(resultMap map[string]*scanner.Result, targets []config.Ta
 			}
 			continue
 		}
-
-		aggregator.Add(res.Files, res.FileSizes)
-
-		_, _, err := e.cleaner.Clean(res.Files, hooks.OnFileCleaned)
-		if err != nil {
-			e.logger.Error("Clean failed", zap.String("target", t.Name), zap.Error(err))
-		}
-
-		if hooks.OnTargetCleaned != nil {
-			hooks.OnTargetCleaned(t.Name)
-		}
+		jobs <- job{target: t, res: res}
 	}
+	close(jobs)
+	wg.Wait()
 
-	// Process commands
+	// Process commands sequentially
 	e.ProcessCommands(targets, hooks)
 
-	uniqueCount := len(aggregator.UniquePaths)
-	return uniqueCount, aggregator.totalSize, nil
+	uniqueCount, totalSize := aggregator.GetStats()
+	return uniqueCount, totalSize, nil
 }
 
 // ProcessCommands executes commands associated with targets.
