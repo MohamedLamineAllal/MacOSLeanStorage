@@ -36,7 +36,17 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		defer logFile.Close()
 	}
 
+	scanBar := progressbar.NewOptions(len(targets),
+		progressbar.OptionSetDescription("Scanning targets..."),
+		progressbar.OptionShowCount(),
+		progressbar.OptionSetTheme(progressbar.Theme{Saucer: "█", SaucerPadding: " ", BarStart: "[", BarEnd: "]"}),
+		progressbar.OptionSetPredictTime(false),
+	)
+
 	hooks := engine.Hooks{
+		OnTargetScanStart: func(name string, path string) {
+			scanBar.Add(1)
+		},
 		OnMatchFound: func(name string, files []string) {
 			if logFile != nil {
 				for _, file := range files {
@@ -57,14 +67,12 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		},
 	}
 
-	scanBar := progressbar.Default(-1, "Scanning targets...")
 	resultMap, err := tp.engine.Scan(targets, hooks)
 	scanBar.Finish()
 	if err != nil {
 		return err
 	}
 
-	aggregator := &engine.ResultAggregator{UniquePaths: make(map[string]int64)}
 	for _, t := range targets {
 		if t.Command != "" {
 			continue
@@ -73,7 +81,6 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		if !ok {
 			continue
 		}
-		aggregator.Add(res.Files, res.FileSizes)
 		
 		colorTarget.Printf("\nTarget: %s ", t.Name)
 		colorPath.Printf("(%s)\n", t.Path)
@@ -88,26 +95,41 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 	}
 
-	uniqueCount, totalSize := aggregator.GetStats()
+	uniqueCount, totalSize := 0, int64(0)
 	if isClean {
-		cleanBar := progressbar.Default(-1, "Cleaning...")
-		uniqueCount, totalSize, err = tp.engine.Clean(resultMap, targets, hooks)
+		desc := "Cleaning targets..."
+		if tp.engine.Cleaner().DryRun() {
+			desc = "[DRY RUN] Cleaning targets..."
+		}
+		cleanBar := progressbar.NewOptions(len(targets),
+			progressbar.OptionSetDescription(desc),
+			progressbar.OptionShowCount(),
+			progressbar.OptionSetTheme(progressbar.Theme{Saucer: "█", SaucerPadding: " ", BarStart: "[", BarEnd: "]"}),
+			progressbar.OptionSetPredictTime(false),
+		)
+
+		cleanHooks := hooks
+		cleanHooks.OnTargetScanStart = func(name string, path string) {
+			cleanBar.Add(1)
+		}
+
+		uniqueCount, totalSize, err = tp.engine.Clean(resultMap, targets, cleanHooks)
 		cleanBar.Finish()
 		if err != nil {
 			return err
 		}
+	} else {
+		aggregator := &engine.ResultAggregator{UniquePaths: make(map[string]int64)}
+		for _, res := range resultMap {
+			aggregator.Add(res.Files, res.FileSizes)
+		}
+		uniqueCount, totalSize = aggregator.GetStats()
 	}
 
 	tp.printSummary(uniqueCount, totalSize, isClean, logPath)
 
-	// Print command-based targets
-	cmdHeader := false
 	for _, t := range targets {
 		if t.Command != "" {
-			if !cmdHeader {
-				fmt.Printf("\nCommands Targets:\n")
-				cmdHeader = true
-			}
 			tp.handleCommand(t, nil, nil)
 		}
 	}
@@ -121,7 +143,7 @@ func (tp *TargetProcessor) printSummary(count int, size int64, isClean bool, log
 		if tp.engine.Cleaner().DryRun() {
 			fmt.Printf("Would delete %d files, freeing %.2f MB\n", count, float64(size)/(1024*1024))
 		} else {
-			fmt.Printf("Deleted %d files, freed %.2f MB\n", count, float64(size)/(1024*1024))
+			fmt.Printf("Deleted %d files, freeing %.2f MB\n", count, float64(size)/(1024*1024))
 		}
 	} else {
 		colorSuccess.Print("Summary: ")
