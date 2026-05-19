@@ -62,10 +62,7 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	var deletedCount int
 	var freedSpace int64
 
-	maxDisplay := 5
-	displayCount := 0
-
-	for i, path := range paths {
+	for _, path := range paths {
 		info, err := os.Stat(path)
 		if err != nil {
 			c.logger.Debug("Failed to stat path", zap.String("path", path), zap.Error(err))
@@ -85,20 +82,6 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 			prefix = "[DRY RUN] "
 		}
 		c.logToFile("%sWould delete: %s", prefix, path)
-
-		// Display to console with truncation
-		if displayCount < maxDisplay {
-			if c.dryRun {
-				colorDryRun.Print("  [DRY RUN] ")
-				fmt.Print("Would delete: ")
-			} else {
-				colorDelete.Print("  Deleting: ")
-			}
-			colorPath.Println(path)
-			displayCount++
-		} else if i == maxDisplay {
-			fmt.Printf("    ... and %d more items (see log for full list)\n", len(paths)-maxDisplay)
-		}
 
 		if !c.dryRun {
 			err = os.RemoveAll(path)

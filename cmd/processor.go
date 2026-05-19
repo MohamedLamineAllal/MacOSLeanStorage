@@ -101,55 +101,20 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		colorPath.Print(t.Path)
 		fmt.Printf(", type: %s)\n", t.Type)
 
+		// Always log all matches to the file
+		if len(result.Files) > 0 && logFile != nil {
+			for _, file := range result.Files {
+				fmt.Fprintf(logFile, "  [MATCH] %s\n", file)
+			}
+		}
+
 		if len(result.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")
 		} else {
-			// Group matches by parent directory for smarter organization in the log
-			dirGroups := make(map[string][]string)
-			for _, p := range result.Files {
-				parent := filepath.Dir(p)
-				dirGroups[parent] = append(dirGroups[parent], p)
-			}
-
-			// Maintain order for the log
-			parents := make([]string, 0, len(dirGroups))
-			for k := range dirGroups {
-				parents = append(parents, k)
-			}
-			for i := 0; i < len(parents); i++ {
-				for j := i + 1; j < len(parents); j++ {
-					if parents[i] > parents[j] {
-						parents[i], parents[j] = parents[j], parents[i]
-					}
-				}
-			}
-
-			displayCount := 0
-			maxDisplay := 5
-			
-			for _, parent := range parents {
-				group := dirGroups[parent]
-				for _, file := range group {
-					// Always log to file if it was initialized
-					if logFile != nil {
-						fmt.Fprintf(logFile, "  [MATCH] %s\n", file)
-					}
-
-					// Truncated display to console (ONLY in scan mode)
-					if !isClean {
-						if verbose || displayCount < maxDisplay {
-							colorMatch.Print("  [MATCH] ")
-							fmt.Println(file)
-							displayCount++
-						} else if displayCount == maxDisplay {
-							fmt.Printf("    ... and %d more matches (see log for full list)\n", len(result.Files)-maxDisplay)
-							displayCount++ // only print the summary once
-						}
-					}
-				}
-			}
-			if !isClean {
-				fmt.Printf("  Total size: %.2f MB\n", float64(result.TotalSize)/(1024*1024))
+			if isClean {
+				fmt.Printf("  %d files will be deleted, freeing %.2f MB\n", len(result.Files), float64(result.TotalSize)/(1024*1024))
+			} else {
+				fmt.Printf("  Found %d files, total size: %.2f MB\n", len(result.Files), float64(result.TotalSize)/(1024*1024))
 			}
 		}
 
@@ -158,12 +123,10 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 
 		// Perform cleaning for this target if in clean mode
 		if isClean && len(result.Files) > 0 {
-			count, size, err := tp.cleaner.Clean(result.Files)
+			_, _, err := tp.cleaner.Clean(result.Files)
 			if err != nil {
 				tp.logger.Error("Clean failed for target", zap.String("name", t.Name), zap.Error(err))
 			}
-			_ = count // aggregate summary at the end using allPaths and totalSize
-			_ = size
 		}
 	}
 
@@ -171,7 +134,28 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		fmt.Printf("\n")
 		colorSuccess.Print("Summary: ")
 		fmt.Printf("Found %d files, total size: %.2f MB, %d commands scheduled\n", len(allPaths), float64(totalSize)/(1024*1024), len(allCommands))
+		
+		if len(allPaths) > 0 {
+			fmt.Printf("Full list of matched files available at: ")
+			colorPath.Println(logPath)
+		}
 		return nil
+	}
+
+	// For CLEAN mode:
+	// If dry run and count <= 20, show the items
+	if tp.cleaner.DryRun() && len(allPaths) > 0 {
+		fmt.Printf("\nDetails:")
+		if len(allPaths) <= 20 {
+			fmt.Printf("\n")
+			for _, path := range allPaths {
+				colorDryRun.Print("  [DRY RUN] ")
+				fmt.Print("Would delete: ")
+				colorPath.Println(path)
+			}
+		} else {
+			fmt.Printf(" List of %d files to be deleted is too large for console. Check log for details.\n", len(allPaths))
+		}
 	}
 
 	// Final summary for clean mode
@@ -193,12 +177,11 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	fmt.Printf("\nMode: ")
 	if tp.cleaner.DryRun() {
 		colorDryRun.Print("DRY RUN\n")
-		fmt.Printf("If you want to perform the cleaning, run: `mls clean --confirm` (or use --dry-run=false)\n")
+		fmt.Printf("To perform the actual cleaning, run: `mls clean --dry-run=false` (or --confirm)\n")
 	} else {
 		colorSuccess.Print("LIVE\n")
 	}
 
-	logPath = filepath.Join(os.TempDir(), "mls-last-run.log")
 	fmt.Printf("\nFull log written to: ")
 	colorPath.Println(logPath)
 
