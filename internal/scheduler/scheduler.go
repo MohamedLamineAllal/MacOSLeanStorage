@@ -34,21 +34,26 @@ func New(logger *zap.Logger) *Scheduler {
 // ShouldRunCommand determines if a command should be executed based on its name and configured interval.
 // It checks a temporary state file to see when the command was last run.
 func (s *Scheduler) ShouldRunCommand(commandName string, intervalDays int) bool {
+	// If no interval is defined, it runs every time the scanner runs
 	if intervalDays <= 0 {
 		return true
 	}
 
+	// Construct state path for the specific command name
 	statePath := filepath.Join(os.TempDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	data, err := os.ReadFile(statePath)
 	if err != nil {
-		return true // Never run
+		// If file doesn't exist, it's the first run, so allow it
+		return true 
 	}
 
+	// Parse stored last run time
 	lastRun, err := time.Parse(time.RFC3339, string(data))
 	if err != nil {
 		return true
 	}
 
+	// Check if configured interval has elapsed
 	return time.Since(lastRun) >= time.Duration(intervalDays)*24*time.Hour
 }
 
@@ -75,7 +80,7 @@ func (s *Scheduler) executeTask(task Task) {
 	if err := task(); err != nil {
 		s.logger.Error("Scheduled task failed", zap.Error(err))
 	} else {
-		// Update last run time on success
+		// Update global last-run state only after a successful task execution
 		_ = os.WriteFile(s.statePath, []byte(time.Now().Format(time.RFC3339)), 0644)
 	}
 }

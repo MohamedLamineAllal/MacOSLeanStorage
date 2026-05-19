@@ -76,6 +76,7 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 			continue
 		}
 
+		// Calculate size before deletion for reporting accuracy
 		var size int64
 		if info.IsDir() {
 			size, _ = c.getDirSize(path)
@@ -83,13 +84,14 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 			size = info.Size()
 		}
 
-		// Log to file always
+		// Log to audit file even in dry-run mode for post-scan analysis
 		prefix := ""
 		if c.dryRun {
 			prefix = "[DRY RUN] "
 		}
 		c.logToFile("%sWould delete: %s", prefix, path)
 
+		// Perform deletion only if not in dry-run mode
 		if !c.dryRun {
 			err = os.RemoveAll(path)
 			if err != nil {

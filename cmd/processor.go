@@ -50,7 +50,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	var commandNames []string
 	var totalSize int64
 
-	// Initialize log file
+	// Initialize audit log file to capture detailed scan results
 	logPath := filepath.Join(os.TempDir(), "mls-last-run.log")
 	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err == nil {
@@ -59,6 +59,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 	}
 
 	for _, t := range targets {
+		// Handle command-based targets separately from file-system targets
 		if t.Command != "" {
 			fmt.Printf("\n")
 			colorTarget.Printf("Target: %s", t.Name)
@@ -81,6 +82,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 			} else {
 				fmt.Println("  Interval: Not scheduled")
 			}
+			// Check if scheduled command should execute based on its history
 			if tp.scheduler.ShouldRunCommand(t.Name, t.IntervalDays) {
 				allCommands = append(allCommands, t.Command)
 				commandNames = append(commandNames, t.Name)
@@ -88,6 +90,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 			continue
 		}
 
+		// Convert config target to scanner-compatible target
 		target := scanner.Target{
 			Name:        t.Name,
 			Path:        t.Path,
@@ -96,6 +99,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 			Type:        t.Type,
 		}
 
+		// Execute scan
 		result, err := tp.scanner.Scan(target, t.IgnorePatterns)
 		if err != nil {
 			tp.logger.Error("Scan failed for target", zap.String("name", t.Name), zap.Error(err))
@@ -108,13 +112,14 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		colorPath.Print(t.Path)
 		fmt.Printf(", type: %s)\n", t.Type)
 
-		// Always log all matches to the file
+		// Log matched files to audit file
 		if len(result.Files) > 0 && logFile != nil {
 			for _, file := range result.Files {
 				fmt.Fprintf(logFile, "  [MATCH] %s\n", file)
 			}
 		}
 
+		// Display scan status to CLI
 		if len(result.Files) == 0 {
 			fmt.Println("  No files match cleanup criteria.")
 		} else {
@@ -128,7 +133,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		allPaths = append(allPaths, result.Files...)
 		totalSize += result.TotalSize
 
-		// Perform cleaning for this target if in clean mode
+		// Execute actual deletion if instructed
 		if isClean && len(result.Files) > 0 {
 			_, _, err := tp.cleaner.Clean(result.Files)
 			if err != nil {
@@ -137,6 +142,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		}
 	}
 
+	// Final summary for dry-run/preview mode
 	if !isClean {
 		fmt.Printf("\n")
 		colorSuccess.Print("Summary: ")
@@ -149,8 +155,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		return nil
 	}
 
-	// For CLEAN mode:
-	// If dry run and count <= 20, show the items
+	// For CLEAN mode: Handle console output limits
 	if tp.cleaner.DryRun() && len(allPaths) > 0 {
 		fmt.Printf("\nDetails:")
 		if len(allPaths) <= 20 {
@@ -174,6 +179,7 @@ func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verb
 		fmt.Printf("Deleted %d files, freed %.2f MB\n", len(allPaths), float64(totalSize)/(1024*1024))
 	}
 
+	// Run all scheduled commands
 	for i, cmd := range allCommands {
 		err := tp.cleaner.ExecuteCommand(cmd)
 		if err == nil {

@@ -54,7 +54,7 @@ func (s *Scanner) isIgnored(name string) bool {
 // Scan analyzes a target and returns a list of paths that match the cleanup criteria.
 // It handles path expansion, globbing, and applies both global and target-specific ignore patterns.
 func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, error) {
-	// Merge global ignore patterns with target-specific ones
+	// Merge global ignore patterns with target-specific ones for holistic filtering
 	allIgnorePatterns := append(s.ignorePatterns, targetIgnorePatterns...)
 	// Temporarily override the scanner's ignore patterns for this scan
 	originalPatterns := s.ignorePatterns
@@ -66,6 +66,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 		return nil, fmt.Errorf("failed to expand path %s: %w", target.Path, err)
 	}
 
+	// Glob the pattern to support wildcards like '*/Cache'
 	paths, err := doublestar.FilepathGlob(expandedPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to glob path %s: %w", expandedPath, err)
@@ -91,13 +92,14 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 			if err != nil {
 				s.logger.Debug("Failed to check folder staleness", zap.String("path", p), zap.Error(err))
 			} else if isStale {
+				// Optimization: if folder is stale, count its entire size as one entry
 				size, err := s.getDirSize(p)
 				if err != nil {
 					s.logger.Debug("Failed to calculate directory size", zap.String("path", p), zap.Error(err))
 				}
 				result.Files = append(result.Files, p)
 				result.TotalSize += size
-				// If we added the folder, we don't need to walk its files individually
+				// Skip manual file-by-file walk since the whole folder is marked for deletion
 				continue
 			}
 		}
@@ -105,11 +107,13 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 		// Always walk files if type allows files
 		if target.Type == "file" || target.Type == "both" {
 			if info.IsDir() {
+				// Recursively crawl directory if staleness check wasn't met
 				err = s.walkFiles(p, target.Threshold, &result.Files, &result.TotalSize, now)
 				if err != nil {
 					s.logger.Debug("Failed to walk files", zap.String("path", p), zap.Error(err))
 				}
 			} else if now.Sub(info.ModTime()) > target.Threshold {
+				// Individual file case
 				result.Files = append(result.Files, p)
 				result.TotalSize += info.Size()
 			}
@@ -123,6 +127,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]string, totalSize *int64, now time.Time) error {
 	entries, err := os.ReadDir(path)
 	if err != nil {
+		// Ignore permission errors to allow partial scans of protected sub-folders
 		if os.IsPermission(err) {
 			return nil
 		}
@@ -130,6 +135,7 @@ func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]str
 	}
 
 	for _, entry := range entries {
+		// Respect ignore patterns per entry
 		if s.isIgnored(entry.Name()) {
 			continue
 		}
@@ -140,10 +146,12 @@ func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]str
 		}
 
 		if entry.IsDir() {
+			// Recursive step
 			if err := s.walkFiles(fullPath, threshold, matches, totalSize, now); err != nil {
 				s.logger.Debug("Subdirectory walk failed", zap.String("path", fullPath), zap.Error(err))
 			}
 		} else {
+			// Check individual file age against the threshold
 			if now.Sub(info.ModTime()) > threshold {
 				*matches = append(*matches, fullPath)
 				*totalSize += info.Size()

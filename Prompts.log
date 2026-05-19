@@ -16,3 +16,5 @@ Add GoDoc-compliant comments to all public AND private functions, types, methods
 
 Ensure you use Go conventions (e.g., `// TypeName represents...`, `// MethodName does...`).
 Refer to `AGENTS.md` for standards.
+Tue May 19 12:10:49 +08 2026
+ - Inline documentation pass on scanner, cleaner, processor, and scheduler.
