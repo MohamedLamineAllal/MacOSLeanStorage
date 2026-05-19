@@ -42,13 +42,32 @@ for i := 0; i < numWorkers; i++ {
 2. **Channel-based Distribution**: We feed `targets` into a `jobs` channel. Multiple goroutines (workers) wait on this channel.
 3. **True Parallelism**: Because these targets involve intensive file system I/O (which is often buffered and handled by the kernel) and CPU-bound staleness calculations (mtime checks, dir size recursion), having one worker per core ensures that all cores are working on different branches of the filesystem simultaneously.
 
-## 4. Summary
+## Parallelism Safety and Correctness
 
-| Feature | OS Threads | Goroutines |
-| :--- | :--- | :--- |
-| **Manager** | Operating System | Go Runtime |
-| **Memory** | Heavy (MBs) | Lightweight (KBs) |
-| **Performance** | Slower context switch | Fast context switch |
-| **Parallelism** | True Parallelism | True Parallelism (when managed by runtime) |
+One might wonder: *How can we scan multiple filesystems simultaneously without causing data corruption or race conditions?*
 
-By using a **Worker Pool** aligned with `runtime.NumCPU()`, `mls` effectively saturates the available CPU capacity for scanning, turning a traditionally sequential I/O task into a parallelized powerhouse.
+The `mls` worker pool achieves thread-safe parallelism through three key architectural decisions:
+
+### 1. Target Independence (Data Immutability)
+The primary reason this parallelization works is that each cleanup target is **independent**. 
+- A worker picks up a `config.TargetConfig` job from the channel.
+- It scans the filesystem starting from that specific root.
+- It does not modify global state or shared variables.
+- Because no two workers are ever operating on the same root directory simultaneously, there is no risk of data contention or conflicting state updates within the `Scanner`.
+
+### 2. Synchronization with `sync.WaitGroup`
+To ensure the program doesn't terminate before scanning is finished:
+- We use a `sync.WaitGroup` to track active workers.
+- The main goroutine calls `wg.Wait()` to block until all workers have signaled `wg.Done()`. 
+- This guarantees that the system only attempts to process or clean results once the entire parallel scan phase has reached a consistent "finalized" state.
+
+### 3. Channel-based Aggregation (Communicating by Sharing)
+We follow the Go mantra: *"Do not communicate by sharing memory; instead, share memory by communicating."*
+- Workers do not write to a shared result slice (which would require a `sync.Mutex` and kill performance).
+- Instead, each worker sends its own `scanner.Result` through a **buffered results channel**.
+- The main goroutine collects these results from the channel once the workers are finished. This is inherently thread-safe because only the main goroutine reads from the results channel, while only the workers write to it.
+
+### Why this approach is robust:
+- **No Race Conditions**: Because we have no shared mutable state across workers, the code is effectively "race-free" by design.
+- **Deterministic Summaries**: Because the order of processing doesn't impact the calculation of `TotalSize` or the list of `Files`, we achieve perfectly reproducible output regardless of which worker picks up which job.
+
