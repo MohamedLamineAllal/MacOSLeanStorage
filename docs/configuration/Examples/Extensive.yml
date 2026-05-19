@@ -1,4 +1,10 @@
 targets:
+  # Library Caches
+  - name: "Library Caches"
+    path: "~/Library/Caches/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   # Arc Browser
   - name: "Arc CacheStorage Cache"
     path: "~/Library/Application Support/Arc/User Data/**/CacheStorage"
