@@ -12,13 +12,18 @@ import (
 )
 
 var (
+	// colorDryRun is used for displaying dry-run specific output.
 	colorDryRun = color.New(color.FgHiBlack, color.Italic)
+	// colorDelete is used for highlighting deletion actions.
 	colorDelete = color.New(color.FgRed)
-	colorPath   = color.New(color.FgBlue)
-	colorCmd    = color.New(color.FgYellow)
+	// colorPath is used for displaying filesystem paths.
+	colorPath = color.New(color.FgBlue)
+	// colorCmd is used for displaying shell commands.
+	colorCmd = color.New(color.FgYellow)
 )
 
-// Cleaner handles the deletion of files
+// Cleaner handles the deletion of files and execution of cleanup commands.
+// It supports a dry-run mode to prevent accidental data loss.
 type Cleaner struct {
 	logger         *zap.Logger
 	dryRun         bool
@@ -26,7 +31,7 @@ type Cleaner struct {
 	logFile        *os.File
 }
 
-// New creates a new Cleaner
+// New creates a new Cleaner instance with the provided logger, dry-run setting, and ignore patterns.
 func New(logger *zap.Logger, dryRun bool, ignorePatterns []string) *Cleaner {
 	return &Cleaner{
 		logger:         logger,
@@ -35,18 +40,19 @@ func New(logger *zap.Logger, dryRun bool, ignorePatterns []string) *Cleaner {
 	}
 }
 
-// SetLogFile sets the file where full logs will be written
+// SetLogFile sets the file where detailed cleanup logs will be written.
 func (c *Cleaner) SetLogFile(f *os.File) {
 	c.logFile = f
 }
 
+// logToFile writes a formatted message to the configured log file, if any.
 func (c *Cleaner) logToFile(format string, a ...interface{}) {
 	if c.logFile != nil {
 		fmt.Fprintf(c.logFile, format+"\n", a...)
 	}
 }
 
-// isIgnored checks if a file name matches any of the ignore patterns
+// isIgnored checks if a file or directory name matches any of the configured ignore patterns.
 func (c *Cleaner) isIgnored(name string) bool {
 	for _, pattern := range c.ignorePatterns {
 		matched, err := filepath.Match(pattern, name)
@@ -57,7 +63,8 @@ func (c *Cleaner) isIgnored(name string) bool {
 	return false
 }
 
-// Clean deletes the provided list of file paths
+// Clean deletes the provided list of file paths and returns the count of deleted items and freed space.
+// If dry-run is enabled, it only logs the actions without performing deletions.
 func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	var deletedCount int
 	var freedSpace int64
@@ -98,6 +105,7 @@ func (c *Cleaner) Clean(paths []string) (int, int64, error) {
 	return deletedCount, freedSpace, nil
 }
 
+// getDirSize calculates the total size of all non-ignored files within a directory recursively.
 func (c *Cleaner) getDirSize(path string) (int64, error) {
 	var size int64
 	entries, err := os.ReadDir(path)
@@ -126,7 +134,7 @@ func (c *Cleaner) getDirSize(path string) (int64, error) {
 	return size, nil
 }
 
-// ExecuteCommand runs a shell command
+// ExecuteCommand runs a shell command unless dry-run mode is enabled.
 func (c *Cleaner) ExecuteCommand(command string) error {
 	if c.dryRun {
 		colorDryRun.Print("  [DRY RUN] ")
@@ -147,13 +155,12 @@ func (c *Cleaner) ExecuteCommand(command string) error {
 	return nil
 }
 
-
-// SetDryRun toggles the dry run mode
+// SetDryRun toggles the dry run mode of the Cleaner.
 func (c *Cleaner) SetDryRun(dryRun bool) {
 	c.dryRun = dryRun
 }
 
-// DryRun returns the current dry run mode
+// DryRun returns true if the Cleaner is currently in dry-run mode.
 func (c *Cleaner) DryRun() bool {
 	return c.dryRun
 }

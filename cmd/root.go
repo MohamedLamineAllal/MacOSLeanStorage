@@ -11,8 +11,11 @@ import (
 )
 
 var (
+	// cfgFile stores the path to the configuration file provided via flags.
 	cfgFile string
+	// logger is the global structured logger for the application.
 	logger  *zap.Logger
+	// dryRun indicates whether the application should perform a live cleanup or just simulate it.
 	dryRun  bool
 )
 
@@ -27,6 +30,7 @@ It focuses on performance, safety (dry-run by default), and multi-profile suppor
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -34,6 +38,7 @@ func Execute() {
 	}
 }
 
+// init initializes the root command's flags and configures the initial setup.
 func init() {
 	cobra.OnInitialize(initLogger, initConfig)
 
@@ -44,6 +49,7 @@ func init() {
 	viper.BindPFlag("dry_run", rootCmd.PersistentFlags().Lookup("dry-run"))
 }
 
+// initLogger initializes the zap logger based on the verbose flag.
 func initLogger() {
 	var err error
 	if verbose, _ := rootCmd.Flags().GetBool("verbose"); verbose {
@@ -57,7 +63,8 @@ func initLogger() {
 	}
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in the config file and ENV variables if set.
+// If the config file does not exist, it creates a default one.
 func initConfig() {
 	if cfgFile == "" {
 		defaultPath, err := config.GetDefaultConfigPath()

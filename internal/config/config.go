@@ -8,7 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config represents the application configuration
+// Config represents the application's root configuration structure.
+// It includes global settings and a list of specific cleanup targets.
 type Config struct {
 	Targets        []TargetConfig `mapstructure:"targets"`
 	IgnorePatterns []string       `mapstructure:"ignore_patterns"`
@@ -16,7 +17,7 @@ type Config struct {
 	Schedule       string         `mapstructure:"schedule"` // Cron expression, e.g., "0 0 * * *" (daily at midnight)
 }
 
-// TargetConfig defines cleanup rules for a specific path
+// TargetConfig defines the cleanup rules and metadata for a specific filesystem path or command.
 type TargetConfig struct {
 	Name           string   `mapstructure:"name"`
 	Path           string   `mapstructure:"path"`
@@ -28,7 +29,8 @@ type TargetConfig struct {
 	IgnorePatterns []string `mapstructure:"ignore_patterns"`
 }
 
-// Load reads the configuration from viper
+// Load unmarshals the configuration from Viper into the Config struct.
+// It also applies default values for missing optional fields.
 func Load() (*Config, error) {
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
@@ -45,7 +47,8 @@ func Load() (*Config, error) {
 	return &cfg, nil
 }
 
-// GetDefaultConfigPath returns the default path for the config file
+// GetDefaultConfigPath returns the standard absolute path for the application configuration file.
+// It usually resolves to ~/.MacosLeanStorage.yaml.
 func GetDefaultConfigPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -54,7 +57,8 @@ func GetDefaultConfigPath() (string, error) {
 	return filepath.Join(home, ".MacosLeanStorage.yaml"), nil
 }
 
-// CreateDefaultConfig creates a skeleton config file if it doesn't exist
+// CreateDefaultConfig generates a default configuration file with a predefined set of cleanup targets.
+// If the file already exists, it does nothing.
 func CreateDefaultConfig(path string) error {
 	if _, err := os.Stat(path); err == nil {
 		return nil // Already exists

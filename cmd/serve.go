@@ -15,7 +15,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// serveCmd represents the serve command
+// serveCmd represents the serve command which starts a background scheduler
+// to perform cleanup tasks at regular intervals.
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start the background cleanup scheduler",
@@ -85,6 +86,7 @@ var serveCmd = &cobra.Command{
 	},
 }
 
+// init adds the serve command to the root command.
 func init() {
 	rootCmd.AddCommand(serveCmd)
 }

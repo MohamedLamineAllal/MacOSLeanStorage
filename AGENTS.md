@@ -105,8 +105,10 @@ gofumpt -l -w .
     - Use `zap.Logger` for structured logging.
     - Log levels: `Info` for general progress, `Debug` for detailed info, `Error` for failures.
 - **Documentation:**
-    - All public functions and types must have comments.
-    - Maintain `ARCHITECTURE.md` for high-level design.
+    - All public and private functions, types, methods, and significant variables MUST have clear GoDoc-compliant comments.
+    - Comments should be concise but descriptive, explaining both the "what" and the "why" (intent).
+    - Use single-line comments (`//`) for most documentation to keep it clean and idiomatic.
+    - Maintain `ARCHITECTURE.md` for high-level design and cross-component logic.
 
 ## Development Workflow
 - **Research -> Strategy -> Execution** lifecycle.

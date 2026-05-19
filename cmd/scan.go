@@ -5,7 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// scanCmd represents the scan command
+// scanCmd represents the scan command which identifies files that can be cleaned up
+// without actually deleting them.
 var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Scan targets for old files",
@@ -23,6 +24,7 @@ var scanCmd = &cobra.Command{
 
 }
 
+// init adds the scan command to the root command.
 func init() {
 	rootCmd.AddCommand(scanCmd)
 }

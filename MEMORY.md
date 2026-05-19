@@ -16,6 +16,13 @@ The project is currently in the **Development & Feature Refinement** phase. We h
 - **Bug Fix**: Resolved size discrepancy between `scan` and `clean` commands. Prevented double-counting in `Scanner` for stale folders and implemented accurate recursive directory size calculation in `Cleaner`. Harmonized ignore patterns across both components for exact total size matching. Verified with `cmd/size_consistency_test.go`.
 - **UI/UX Enhancement**: Integrated `fatih/color` for vibrant output. Implemented an "Ultra-Compact" CLI mode: individual matches are suppressed in the console, providing only target-level summaries. For Dry Runs, individual deletions are only listed if the total count is <= 20; otherwise, the user is redirected to the full audit log at `/tmp/mls-last-run.log`. This ensures maximum CLI performance while maintaining a high-fidelity audit trail.
 - **Compliance**: Restored architectural compliance to `AGENTS.md` mandates, including `Prompts.log` and `ACTIONS.log` enforcement.
+- **Documentation Pass**: Completed a comprehensive GoDoc documentation pass for core components:
+    - `cmd/processor.go`, `cmd/colors.go`
+    - `internal/scanner/scanner.go`
+    - `internal/cleaner/cleaner.go`
+    - `internal/config/config.go`
+    - `internal/scheduler/scheduler.go`
+    All public and private functions, types, and significant variables now have clear, concise GoDoc-compliant comments.
 
 ## Pending Tasks
 - Add more robust error handling and telemetry (Zap).

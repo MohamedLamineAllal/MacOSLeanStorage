@@ -11,7 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Target represents a directory to be scanned
+// Target represents a directory or set of paths to be scanned for cleanup.
+// It defines the criteria for identifying stale data.
 type Target struct {
 	Name        string
 	Path        string
@@ -20,25 +21,26 @@ type Target struct {
 	Type        string // "file", "folder", or "both"
 }
 
-// Result contains information about a scanned target
+// Result contains the aggregated findings about a scanned target.
 type Result struct {
 	TargetName string
 	Files      []string
 	TotalSize  int64
 }
 
-// Scanner handles the directory traversal and analysis
+// Scanner handles the directory traversal and analysis of filesystem paths.
+// It identifies stale files and directories based on age thresholds and configuration.
 type Scanner struct {
 	logger         *zap.Logger
 	ignorePatterns []string
 }
 
-// New creates a new Scanner
+// New creates a new Scanner instance with the provided logger and global ignore patterns.
 func New(logger *zap.Logger, ignorePatterns []string) *Scanner {
 	return &Scanner{logger: logger, ignorePatterns: ignorePatterns}
 }
 
-// isIgnored checks if a file name matches any of the ignore patterns
+// isIgnored checks if a file or directory name matches any of the configured ignore patterns.
 func (s *Scanner) isIgnored(name string) bool {
 	for _, pattern := range s.ignorePatterns {
 		matched, err := filepath.Match(pattern, name)
@@ -49,7 +51,8 @@ func (s *Scanner) isIgnored(name string) bool {
 	return false
 }
 
-// Scan analyzes a target and returns a list of files that match cleanup criteria
+// Scan analyzes a target and returns a list of paths that match the cleanup criteria.
+// It handles path expansion, globbing, and applies both global and target-specific ignore patterns.
 func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, error) {
 	// Merge global ignore patterns with target-specific ones
 	allIgnorePatterns := append(s.ignorePatterns, targetIgnorePatterns...)
@@ -116,6 +119,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 	return result, nil
 }
 
+// walkFiles recursively traverses a directory to find individual files that exceed the staleness threshold.
 func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]string, totalSize *int64, now time.Time) error {
 	entries, err := os.ReadDir(path)
 	if err != nil {
@@ -149,6 +153,8 @@ func (s *Scanner) walkFiles(path string, threshold time.Duration, matches *[]str
 	return nil
 }
 
+// checkStaleness determines if a directory is considered "stale" based on the age of its contents.
+// A directory is stale if all of its non-ignored files are older than the threshold.
 func (s *Scanner) checkStaleness(path string, threshold time.Duration, now time.Time) (bool, error) {
 	info, err := os.Stat(path)
 	if err != nil {
@@ -188,6 +194,7 @@ func (s *Scanner) checkStaleness(path string, threshold time.Duration, now time.
 	return stale, err
 }
 
+// getDirSize calculates the total size of all non-ignored files within a directory recursively.
 func (s *Scanner) getDirSize(path string) (int64, error) {
 	var size int64
 	entries, err := os.ReadDir(path)
@@ -216,6 +223,7 @@ func (s *Scanner) getDirSize(path string) (int64, error) {
 	return size, nil
 }
 
+// expandPath converts a filesystem path (supporting ~ for home directory) into an absolute path.
 func expandPath(path string) (string, error) {
 	if strings.HasPrefix(path, "~/") {
 		home, err := os.UserHomeDir()

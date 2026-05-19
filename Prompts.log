@@ -1,89 +1,18 @@
----
-TIMESTAMP: 2026-05-16T14:30:00Z
-PROMPT: Please Create .gitignore file, prep the base for golang code, write docs where you analyze and decide how we approach the problem. What are all important type of files and folders that are safe to remove and generally consume a lot of storage. IN places like Arc, vscode, where there is multiple profiles ... How to make sure we do it for the different profiles. If we use time as a metric what is the best logic for what we should remove from cache and what not. What are all directory that are 100% safe to remove and with what time constraint to make sure it's safe. Anything that help us with such logic. Document everything Also Write a doc where you Plan the Go Lang folder structure, design choices, Optmizations, libraries choices, what to pick for files and directory listening, what about cron job like of checkin. What are just the best decision for such kind of a tool, where we focus on performance and efficiency + safety Commit init project and commit after you finish. Install also all go lang tools. Same for vscode extensions. Include all in .vscode.
----
-TIMESTAMP: 2026-05-16T14:45:00Z
-PROMPT: i want to use AGENTS.md instead, can you setup .gemini/settings.json to use that and read @GEMINI.md and cross check with @AGENTS.md  and update AGENTS.md and remove GEMINI.md and then refresh the session then Check AGENTS.md instruction apply them and check all that was done this far. As the agent did execute a prompt i gave him but didn't read AGENTS.md  and hence didn't manage things as i wanted. Check the prompt that was used before this. Correct what need to be correct and do what wasn't done that need to be done.
----
----
-TIMESTAMP: 2026-05-16T15:00:00Z
-PROMPT: i reviewed the proposal and agree with analysis
-please go and build the implementation
-For command line make the necessary commands and functin
-Add a command to open the configuration file in Finder
-Please also write tests and run them to see if all is working perfectly
-Build one thing and commit and so on
-When you test create a report of all testing
-Document everything
-Create an end user Documentation
-Take your time, take as many steps as needed. Until you finish
-Also please define code style
-and configure a linter
----
-TIMESTAMP: 2026-05-16T15:30:00Z
-PROMPT: You didn't respect @AGENTS.md isntruction > you didn't update MEMORY.md and didn't add my prompt to Prompts.log. Please update those. Otherwise good work.
-also make sure AGENTS.md is configured so that gemini can use it. We did create .gemini/settings.json please verify that
----
-2026-05-17: Also very bad logging, Improve the logging to be human readable, clean CLI tool for this session.
-2026-05-17: You weren't respecting AGENTS.md, i just added GEMINI.md that instruct to read AGENTS.md and follow the instruction there. See if we need or not to update .gemini/settings.md. Otherwise read AGENTS.md and correct the things that should have been done, updating MEMORY.md, prompts.log, and commiting the changes. Make sure to do it right.
-May 17, 2026 - User Prompt: Please for the scheduler i want if at midnight the computer is off (and if a schedule is missed) the next wake up when computer on, the missed scheduled task should all be run.
-May 17, 2026 - User Prompt: Please for the scheduler i want if at midnight the computer is off (and if a schedule is missed) the next wake up when computer on, the missed scheduled task should all be run. ... (subsequent requests for compliance and commit)
-User: When running scan the configuration file when doesn't exist is not being created automatically. Please fix that and add a test about this
+## Prompt: 2024-05-24
+Continue the documentation pass. 
 
-[2026-05-17]
-- Request: "Can you confirm for me if this syntax is supported or not... If not supported support it. Analyze my question as well."
+### Remaining from Batch 1:
+- cmd/processor.go
+- cmd/colors.go
 
-[2026-05-17]
-- Request: "You didn't write tests and run tests for the glob ** syntax. Also add in README.md and user guide the instruction for such patterns."
+### Batch 2:
+- internal/scanner/scanner.go
+- internal/cleaner/cleaner.go
+- internal/config/config.go
+- internal/scheduler/scheduler.go
 
-[2026-05-17]
-- Request: "Please add an instruction for what argument to add to force delete (not DRY RUN)"
+### Objective
+Add GoDoc-compliant comments to all public AND private functions, types, methods, and significant variables in each file. Comments should be concise but descriptive, explaining both "what" the code does and the "why" (intent).
 
-[2026-05-17]
-- Request: "i want it in the logging when dry run is run in the final line."
-
-[2026-05-17]
-- Request: "Let's add the support of cleaning pnpm cache... normally the best way is to use pnpm store prune... if yes go and build it."
-
-[2026-05-18]
-- Request: "You didn't finish the work... how are you handling the execution of the scheduling and to not execute right away ..."
-
-[2026-05-18]
-- Request: "You didn't document it arhcitecture, user guide .. you didn't build test for this and run it"
-
-[2026-05-18]
-- Request: "go build -o mls main.go... cmd/clean.go:31:7: undefined: scheduler"
-
-[2026-05-18]
-- Request: "Test failed... You should always run tests after you create them."
-
-[2026-05-18]
-- Request: "You didn't update scan.go to account for new command feature. You should update it, to know to skip command from normal scan."
-
-[2026-05-18]
-- Request: "hmm u didnt commit, no tests no docs ... (in scan output context)"
-
-[2026-05-18]
-- Request: "(Implicit) Commit the remaining changes in cmd/scan.go."
-
-[2026-05-18]
-- Request: "Can you explain to me as well as document it... how does Command targets works, once it's run... what mechanism is used for that. how is that persisted ?"
-
-[2026-05-18]
-- Request: "You didn't update README user guide and Architecture... Make sure to update them and commit them and to detail well"
-
-[2026-05-18]
-- Request: "You didn't commit. You didn't write tests."
-
-[2026-05-18]
-- Request: "You didn't commit. You didn't write tests."
-
-[2026-05-18]
-- Request: "tests are failing"
-
-[2026-05-18]
-- Request: "Why are we repeating work in scan and clean... have one function that manage with dryRun flag..."
-
-[2026-05-18]
-- Request: "bad logs clean them to be human readable"
-User Prompt: Can you investigate why mls clean and mls scan are showing different numbers for how much is going to be cleaned scan showing 90go+ and clean showing 50go+. Do this and fix it. and Document that in docs/issues/ define problem, detail why, and the fix. After this, commit the changes. Once done fully with this. Move to the next task: Make the logging colorful. Pick great colors. Paths. Target, command to execute. Color things well. After you apply the changes and documents them. commit again.
+Ensure you use Go conventions (e.g., `// TypeName represents...`, `// MethodName does...`).
+Refer to `AGENTS.md` for standards.

@@ -10,17 +10,18 @@ import (
 	"go.uber.org/zap"
 )
 
-// Task represents a function to be executed on a schedule
+// Task represents a function to be executed on a periodic schedule.
 type Task func() error
 
-// Scheduler handles the periodic execution of tasks
+// Scheduler handles the periodic execution of tasks and maintains state about task execution.
+// It uses a cron-based scheduling system and tracks the last run time to handle missed tasks.
 type Scheduler struct {
 	cron       *cron.Cron
 	logger     *zap.Logger
 	statePath  string
 }
 
-// New creates a new Scheduler
+// New creates a new Scheduler instance and initializes the state path for tracking task execution.
 func New(logger *zap.Logger) *Scheduler {
 	home, _ := os.UserHomeDir()
 	return &Scheduler{
@@ -30,7 +31,8 @@ func New(logger *zap.Logger) *Scheduler {
 	}
 }
 
-// ShouldRunCommand checks if the command has not been run within the interval
+// ShouldRunCommand determines if a command should be executed based on its name and configured interval.
+// It checks a temporary state file to see when the command was last run.
 func (s *Scheduler) ShouldRunCommand(commandName string, intervalDays int) bool {
 	if intervalDays <= 0 {
 		return true
@@ -50,13 +52,13 @@ func (s *Scheduler) ShouldRunCommand(commandName string, intervalDays int) bool 
 	return time.Since(lastRun) >= time.Duration(intervalDays)*24*time.Hour
 }
 
-// UpdateCommandRunTime saves the last run time for a command
+// UpdateCommandRunTime records the current time as the last run time for the specified command.
 func (s *Scheduler) UpdateCommandRunTime(commandName string) {
 	statePath := filepath.Join(os.TempDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	_ = os.WriteFile(statePath, []byte(time.Now().Format(time.RFC3339)), 0644)
 }
 
-// AddTask adds a task to the scheduler with a cron expression
+// AddTask schedules a task to be executed according to a cron-style specification string.
 func (s *Scheduler) AddTask(spec string, task Task) error {
 	_, err := s.cron.AddFunc(spec, func() {
 		s.executeTask(task)
@@ -67,7 +69,7 @@ func (s *Scheduler) AddTask(spec string, task Task) error {
 	return nil
 }
 
-
+// executeTask runs the provided task, logs its execution, and updates the last run state on success.
 func (s *Scheduler) executeTask(task Task) {
 	s.logger.Info("Executing scheduled task")
 	if err := task(); err != nil {
@@ -78,7 +80,8 @@ func (s *Scheduler) executeTask(task Task) {
 	}
 }
 
-// CheckForMissedTasks checks if the last run was more than 24 hours ago and triggers a run
+// CheckForMissedTasks evaluates if a scheduled task was missed (e.g., computer was off) and runs it if necessary.
+// It considers a task missed if the last run was more than 23 hours ago.
 func (s *Scheduler) CheckForMissedTasks(task Task) {
 	data, err := os.ReadFile(s.statePath)
 	if err != nil {
@@ -97,13 +100,13 @@ func (s *Scheduler) CheckForMissedTasks(task Task) {
 	}
 }
 
-// Start begins the scheduler execution
+// Start begins the scheduler's execution loop.
 func (s *Scheduler) Start() {
 	s.logger.Info("Starting scheduler")
 	s.cron.Start()
 }
 
-// Stop halts the scheduler execution
+// Stop halts the scheduler's execution loop.
 func (s *Scheduler) Stop() {
 	s.logger.Info("Stopping scheduler")
 	s.cron.Stop()

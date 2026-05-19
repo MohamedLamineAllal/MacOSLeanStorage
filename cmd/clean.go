@@ -5,7 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// cleanCmd represents the clean command
+// cleanCmd represents the clean command which scans and deletes files
+// that exceed the age threshold. It defaults to dry-run mode unless specified.
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Scan and clean old files",
@@ -22,6 +23,7 @@ var cleanCmd = &cobra.Command{
 
 }
 
+// init adds the clean command to the root command.
 func init() {
 rootCmd.AddCommand(cleanCmd)
 }

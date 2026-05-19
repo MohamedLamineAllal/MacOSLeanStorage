@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// TargetProcessor coordinates the scanning and cleaning of multiple targets.
+// It acts as the high-level orchestrator that connects the scanner, cleaner, and scheduler.
 type TargetProcessor struct {
 	scanner   *scanner.Scanner
 	cleaner   *cleaner.Cleaner
@@ -20,6 +22,7 @@ type TargetProcessor struct {
 	logger    *zap.Logger
 }
 
+// NewTargetProcessor creates a new TargetProcessor with initialized scanner, cleaner, and scheduler.
 func NewTargetProcessor(logger *zap.Logger, ignorePatterns []string, dryRun bool) *TargetProcessor {
 	return &TargetProcessor{
 		scanner:   scanner.New(logger, ignorePatterns),
@@ -29,7 +32,8 @@ func NewTargetProcessor(logger *zap.Logger, ignorePatterns []string, dryRun bool
 	}
 }
 
-// Result holds the findings of a scan
+// Result holds the findings of a scan.
+// This type is intended for aggregating results across multiple targets.
 type Result struct {
 	Paths    []string
 	Commands []string
@@ -37,6 +41,9 @@ type Result struct {
 	Size     int64
 }
 
+// Run executes the scanning or cleaning process for the provided list of targets.
+// It iterates through each target, performs the scan, and optionally executes the cleaning logic.
+// It also handles scheduled commands and generates a final summary for the user.
 func (tp *TargetProcessor) Run(targets []config.TargetConfig, isClean bool, verbose bool) error {
 	var allPaths []string
 	var allCommands []string
