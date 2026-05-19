@@ -128,12 +128,10 @@ func (s *Scheduler) CheckForMissedTasks(task Task) {
 
 // Start begins the scheduler's execution loop.
 func (s *Scheduler) Start() {
-	s.logger.Info("Starting scheduler")
 	s.cron.Start()
 }
 
 // Stop halts the scheduler's execution loop.
 func (s *Scheduler) Stop() {
-	s.logger.Info("Stopping scheduler")
 	s.cron.Stop()
 }
