@@ -8,12 +8,37 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
 	"github.com/spf13/cobra"
 )
 
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Manage configuration",
+}
+
+var openCmd = &cobra.Command{
+	Use:   "open",
+	Short: "Open the configuration file",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		path, err := config.GetDefaultConfigPath()
+		if err != nil {
+			return err
+		}
+		return exec.Command("open", path).Run()
+	},
+}
+
+var revealCmd = &cobra.Command{
+	Use:   "reveal",
+	Short: "Reveal the configuration file in Finder",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		path, err := config.GetDefaultConfigPath()
+		if err != nil {
+			return err
+		}
+		return exec.Command("open", "-R", path).Run()
+	},
 }
 
 var reloadCmd = &cobra.Command{
@@ -31,8 +56,6 @@ var reloadCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		err = process.Signal(os.Interrupt) // SIGHUP is not directly supported on all platforms via os.Signal, but we can use syscall
-		// Using syscall for SIGHUP
 		return process.Signal(syscall.SIGHUP)
 	},
 }
@@ -48,5 +71,7 @@ func findMLSServePID() (int, error) {
 
 func init() {
 	configCmd.AddCommand(reloadCmd)
+	configCmd.AddCommand(openCmd)
+	configCmd.AddCommand(revealCmd)
 	rootCmd.AddCommand(configCmd)
 }
