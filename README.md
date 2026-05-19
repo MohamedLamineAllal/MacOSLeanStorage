@@ -73,10 +73,16 @@ dry_run: true
 
 
 ## Testing
-Run the test suite:
+Run the full test suite:
 ```bash
 go test ./...
 ```
+
+To run tests with the **Go Race Detector** (recommended for verifying concurrency safety):
+```bash
+go test -race ./...
+```
+
 See [testing_report.md](./testing_report.md) for the latest test results.
 
 ## License
