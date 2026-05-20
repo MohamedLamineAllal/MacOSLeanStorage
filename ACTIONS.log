@@ -33,3 +33,15 @@ Action: Refactored Cleaner to use parallel worker pool for deletion. All cleanup
 Action: Documented Parallel Deletion implementation in docs/performance/PERFORMANCE.md. Added Git commit to finalize.
 Action: Finalized modularization into mls-core and ensured target-ordered scan execution.
 Action: Refactored engine API to expose Scan, Clean, ScanAndClean. Integrated hook-based logging throughout.
+## Action: 2026-05-19
+Action: Analyze and refactor scan/clean engine performance.
+Action: Implemented single-pass scanner traversal in internal/scanner/scanner.go.
+Action: Refactored Clean to parallel worker pool in internal/engine/engine.go.
+Action: Added rigorous test suite with -race for engine and command handler (engine_test.go, command_handler_test.go, etc).
+Action: Standardized config files and updated embedded defaults.
+Action: Fixed cron scheduling string to 6 fields.
+Action: Migrated all transient /tmp usage to ~/Library/Caches/mls.
+Action: Implemented agent management commands (install, start, stop, status, uninstall, restart) in cmd/agent.go.
+Action: Added 30-minute missed task catch-up ticker to cmd/serve.go.
+Action: Implemented zero-downtime config reload via SIGHUP.
+Action: Restored missing 'open' and 'reveal' config commands.
