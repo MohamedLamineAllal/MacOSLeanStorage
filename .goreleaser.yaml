@@ -14,11 +14,7 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
-    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+  - name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
 
 nfpms:
   - id: mls
@@ -39,22 +35,21 @@ release:
   name_template: "Release {{ .Tag }}"
   header: |
     # MrLeanStorage {{ .Tag }}
-
+    
     A high-performance storage cleanup tool for macOS, designed to safely and efficiently clean up large cache and temporary files.
   footer: |
     ## Installation
     Download the binary for your platform, or install via package manager (deb/rpm) provided above.
-
+    
     See [README.md](https://github.com/MohamedLamineAllal/MrLeanStorage/blob/main/README.md) for installation and usage guides.
 
-brews:
+homebrew_tap:
   - repository:
       owner: MohamedLamineAllal
       name: homebrew-mls
     commit_author:
       name: goreleaserbot
-      email: themagiciandev6@gmail.com
+      email: goreleaser@mohamed.dev
     homepage: https://github.com/MohamedLamineAllal/MrLeanStorage
-    description: Lean High-performance storage cleanup tool with custom configuration
+    description: High-performance storage cleanup tool
     license: MIT
-
