@@ -99,3 +99,6 @@ Action: Refactored `cmd/serve.go` to orchestrate background cleanups using the u
 
 ## Action: 2026-05-20 (Fix config reload command, multi-PID lookup, and silence CLI usage)
 Action: Resolved `./mls config reload` failure when multiple `mls serve` processes are active (e.g., manual serve and background launchd daemon) by enhancing the PID lookup logic (`findMLSServePIDs`) to safely extract, parse, and signal all running process instances. Additionally, set `SilenceUsage: true` on `rootCmd` to globally suppress confusing Cobra usage menus on runtime/operational failures, keeping command outputs clean and focused on actual error messages.
+
+## Action: 2026-05-20 (Fix SIGHUP signal channel race and termination)
+Action: Resolved a race condition where receiving a SIGHUP signal (dynamic configuration reload) in the foreground or background `serve` process caused it to exit unexpectedly instead of hot-reloading. The issue was due to both the main thread blocking on `<-sigChan` and the signal-processing background goroutine reading from the same channel, causing them to compete. Fixed this by introducing a dedicated `doneChan` channel so that only the background goroutine reads from `sigChan` and handles `SIGHUP` safely, notifying the main thread only on termination signals (`SIGINT` or `SIGTERM`).

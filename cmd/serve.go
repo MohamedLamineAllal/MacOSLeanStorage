@@ -98,6 +98,9 @@ var serveCmd = &cobra.Command{
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
+		// doneChan is used to coordinate graceful shutdown without channel races
+		doneChan := make(chan struct{})
+
 		// Periodic check for missed tasks (e.g., wake from sleep) every 30 minutes
 		ticker := time.NewTicker(30 * time.Minute)
 		defer ticker.Stop()
@@ -119,6 +122,8 @@ var serveCmd = &cobra.Command{
 						cfg = newCfg
 						logger.Info("Configuration reloaded successfully")
 					} else {
+						// Signal the main thread to shut down on SIGINT or SIGTERM
+						close(doneChan)
 						return
 					}
 				}
@@ -126,7 +131,7 @@ var serveCmd = &cobra.Command{
 		}()
 
 		// Block until shutdown signal
-		<-sigChan
+		<-doneChan
 
 		colorWarning.Println("\nStopping scheduler...")
 		return nil

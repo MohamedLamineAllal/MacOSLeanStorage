@@ -82,3 +82,6 @@ User requested to refactor the background cleanup daemon in `cmd/serve.go` to us
 
 ## Prompt: 2026-05-20 (Fix config reload command and PID lookup)
 User reported that running `./mls config reload` failed with an invalid syntax error from `strconv.Atoi` when multiple `mls serve` processes are running (e.g. manual serve and background launchd). Additionally, the help menu displayed upon runtime failures was confusing.
+
+## Prompt: 2026-05-20 (Fix serve exit on SIGHUP config reload)
+User reported that after sending the SIGHUP signal (dynamic configuration reload) to the active `mls serve` processes, the process exited with no message instead of hot-reloading and remaining running.
