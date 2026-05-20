@@ -15,18 +15,15 @@ builds:
 
 archives:
   - id: default
-    # Applies to your 'mls' build target defined above
     ids:
       - mls
-    # Tarball is default, but we declare it cleanly
     formats:
       - tar.gz
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
-    # This replaces the broken 'goos' filter blocks
-    # It converts the archive output format specifically for Windows
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
 nfpms:
   - id: mls
@@ -38,9 +35,8 @@ nfpms:
     formats:
       - deb
       - rpm
-    # This maps your compiled binary into the package's install directory
     contents:
-      - src: ./mls
+      - src: '{{ .Binary }}'
         dst: /usr/local/bin/mls
 
 release:
