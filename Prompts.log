@@ -94,3 +94,6 @@ User requested to add robust cross-platform support to `mls config open` and `ml
 
 ## Prompt: 2026-05-20 (Update docs for cross-platform config open/reveal)
 User requested to update the documentation (README.md and USER_GUIDE.md) to remove the macOS-only limitation note for `mls config open` and `mls config reveal`, marking them as fully cross-platform.
+
+## Prompt: 2026-05-20 (Update AGENTS.md prompt logging rule)
+please update AGENTS.md to make sure prompts.log should log the prompts exactly as the user prompt them

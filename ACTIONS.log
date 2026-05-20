@@ -116,3 +116,8 @@ Files updated:
 - docs/USER_GUIDE.md: Updated command references to remove macOS limitations and added cross-platform explanations.
 - cmd/config.go: Rewrote revealCmd's Short help message and inline comments to reflect cross-platform file explorers (Finder / File Explorer).
 Verified: All tests passed, built successfully, and validated documentation formatting.
+
+## Action: 2026-05-20 (Update AGENTS.md prompt logging rule)
+Action: Updated the prompt logging guideline in AGENTS.md to ensure all future model interactions record user prompts exactly as they are given without any paraphrasing or truncating.
+Files updated:
+- AGENTS.md: Refined prompt logging section.

@@ -25,6 +25,7 @@
 - [x] Single-Instance Serve Enforcement: Implemented a robust cross-platform locking mechanism using syscall.Flock (macOS/Linux) and exclusive-file fallbacks (Windows) to prevent concurrent instances of `mls serve` from running, printing a friendly already-running message (with the active PID) and exiting cleanly.
 - [x] Cross-Platform Config Open & Reveal: Created robust OpenPath and RevealPath system helpers in internal/utils supporting macOS, Windows, and Linux natively, and refactored config commands to use them.
 - [x] Cross-Platform Documentation & CLI Help Alignment: Fully updated README.md, docs/USER_GUIDE.md, and cmd/config.go help text to remove macOS-only notes for config open/reveal and describe the cross-platform file explorers.
+- [x] Strict Prompt Logging Rule: Updated AGENTS.md to mandate that user prompts are logged exactly as they are given, without paraphrasing or truncating.
 
 ## Core Project Documentation
 - [Cleanup Estimation Discrepancy Analysis](./docs/Stats_Counting.md)
