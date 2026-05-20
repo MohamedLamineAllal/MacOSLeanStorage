@@ -117,6 +117,15 @@ Refer to [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) for information on
 
 Please note that the background agent management commands (`mls agent ...`) are currently supported **only on macOS**. We will update this section as support for background services on other platforms is implemented.
 
+The rest of the commands should work on all platforms:
+- `mls scan`: Scans targets for stale files and directories based on your configuration.
+- `mls clean`: Deletes stale files and directories identified during a scan.
+- `mls serve`: Starts the background scheduler loop to perform automated cleanup.
+- `mls config open`: Opens the configuration file in your default system editor.
+- `mls config reveal`: Reveals the configuration file location in your file explorer.
+- `mls config reload`: Signals the running `mls serve` daemon to reload its configuration.
+
+If you don't want to wait for the Daemon support on other platforms you can setup yours, with `mls serve`. Ask `gemini` or `gpt` for how to set up a daemon on linux or windows for `mls serve` command. `mls serve` will handle the rest for you.
 
 ## License
 
