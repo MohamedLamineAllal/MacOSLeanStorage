@@ -19,22 +19,9 @@ Inside the repo run:
 
 ```sh
 go build -o mls main.go && \
-sudo mv mls /usr/local/bin/mls
-```
+## Installation
+See the [Installation Guide](./docs/INSTALL.md) for detailed instructions on installing `mls` on macOS, Linux, and Windows, including pre-built binaries and building from source.
 
-To build and install `mls` from the source repository:
-
-```bash
-# Clone the repository and install
-git clone git@github.com:MohamedLamineAllal/MacOSLeanStorage.git /tmp/mls-build && \
-cd /tmp/mls-build && \
-go build -o mls main.go && \
-sudo mv mls /usr/local/bin/mls && \
-cd /tmp && rm -rf mls-build
-```
-
-### From GitHub Releases (Pre-built)
-You can download pre-built binaries for your platform directly from the [GitHub Releases page](https://github.com/MohamedLamineAllal/MacOSLeanStorage/releases).
 
 ## Usage
 
