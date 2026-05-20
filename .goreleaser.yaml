@@ -1,0 +1,38 @@
+version: 2
+project_name: mls
+
+builds:
+  - id: mls
+    main: ./main.go
+    binary: mls
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
+nfpms:
+  - id: mls
+    package_name: mls
+    vendor: MacosLeanStorage
+    homepage: https://github.com/MohamedLamineAllal/MacOSLeanStorage
+    maintainer: Mohamed Lamine Allal <allalmohamedlamine@gmail.com>
+    description: High-performance storage cleanup tool
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/local/bin
+
+release:
+  github:
+    owner: MohamedLamineAllal
+    name: MacOSLeanStorage
