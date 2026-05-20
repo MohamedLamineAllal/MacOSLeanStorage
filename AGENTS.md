@@ -13,7 +13,8 @@ Every prompt interaction must strictly follow the **Research -> Strategy -> Exec
 - Run `git log -n 5 --oneline` to synchronize with recent commits.
 - Check the git status to avoid modifying staged files.
 
-### Step 2: Strict Logging Protocols
+### Step 2: Strict Logging Protocols (Append-Only)
+- **Append-Only Mandate:** All logs (`Prompts.log`, `ACTIONS.log`) are **append-only**. Never overwrite, truncate, or delete existing entries.
 - **Prompt Logging:** Log every user prompt into [Prompts.log](file:///Users/mohamedlamineallal/repos/MacosLeanStorage/Prompts.log) chronologically, copying the user's prompt exactly as it is given without paraphrasing or truncating.
 - **Action Logging:** For every modification, analysis, or test run, log a detailed action record in [ACTIONS.log](file:///Users/mohamedlamineallal/repos/MacosLeanStorage/ACTIONS.log). Include specific context so developers can understand the history at a glance.
 - **Memory Updates:** Keep [MEMORY.md](file:///Users/mohamedlamineallal/repos/MacosLeanStorage/MEMORY.md) in sync as progress is made, detailing completed/pending milestones and design decisions.
