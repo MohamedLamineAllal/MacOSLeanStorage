@@ -45,7 +45,7 @@ release:
   footer: |
     See [README.md](https://github.com/MohamedLamineAllal/MrLeanStorage/blob/main/README.md) for installation and usage guides.
 
-brews:
+homebrew_casks:
   - repository:
       owner: MohamedLamineAllal
       name: homebrew-mls
