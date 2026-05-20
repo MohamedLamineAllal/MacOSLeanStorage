@@ -112,3 +112,7 @@ please build tests for this
 
 Also for the github workflow, is there a way to make sure tests run in different platforms
 (including windows) or this is not possible on github actions
+
+## Prompt: 2026-05-20 (Resume - share thoughts on CI platforms)
+resume
+And please tell me what you think first

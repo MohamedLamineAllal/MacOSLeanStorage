@@ -138,3 +138,6 @@ Action: Proceeding with event-driven cross-platform configuration reload refacto
 ## Action: 2026-05-20 (Commit, test reload, and CI platforms)
 Action: Started stage and commit of the native configuration reload refactoring. Designing comprehensive cross-platform unit tests for startReloadListener and reloadProcesses to fully validate behavior. Preparing response on GitHub Actions cross-platform runners.
 Status: Completed. Created cmd/reload_test.go with TestStartReloadListenerAndProcesses and TestFindMLSServePIDs. All tests built and passed successfully with -race. Committed the tests.
+
+## Action: 2026-05-20 (Cross-platform CI via GitHub Actions matrix)
+Action: Updated .github/workflows/ci.yml to use a matrix strategy running go build ./... and go test -race ./... natively on ubuntu-latest, macos-latest, and windows-latest. Set fail-fast: false so all platforms report independently. Go version aligned to go.mod (1.26.2). Verified Windows cross-compilation builds cleanly before committing. Committed CI update.
