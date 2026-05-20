@@ -55,7 +55,7 @@ On first run, `mls` automatically creates a default configuration file at `~/.Mr
 # Open configuration in your default editor
 mls config open
 
-# Reveal configuration location in Finder
+# Reveal configuration location in your system's file manager (Finder / File Explorer)
 mls config reveal
 ```
 
@@ -135,13 +135,10 @@ The rest of the commands should work on all platforms:
 - `mls serve`: Starts the background scheduler loop to perform automated cleanup. You can use it with CLI on any platform, you can set it up as a daemon, or start when the system starts.
   - > [!WARNING]
   - > Runs in **active deletion mode** (`dry_run: false` regardless of global config settings) to perform actual background cleanups. Verify your patterns with `mls scan` first!
-- `mls config open`: Opens the configuration file in your default system editor.
-  - (Works only on MacOS, we will update this for cross platform)
-- `mls config reveal`: Reveals the configuration file location in your file explorer.
-  - (Works only on MacOS, we will update this for cross platform)
-- `mls config reload`: Signals the running `mls serve` daemon to reload its configuration.
-  - (Works only on Macos, we will update this for cross platform)
-  - Stop `mls serve` and start it again to reload.
+- `mls config open`: Opens the configuration file in your default system editor. (Cross-platform)
+- `mls config reveal`: Reveals the configuration file location in your system's file explorer (Finder, File Explorer, or parent folder on Linux). (Cross-platform)
+- `mls config reload`: Signals all running `mls serve` daemons to reload their configuration. (Supported on macOS and Linux)
+  - For Windows, stop `mls serve` and start it again to reload the configuration.
 
 If you don't want to wait for the Daemon support on other platforms you can setup yours, with `mls serve`. Ask `gemini` or `gpt` for how to set up a daemon on linux or windows for `mls serve` command. `mls serve` will handle the rest for you.
 

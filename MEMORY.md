@@ -24,7 +24,7 @@
 - [x] Multi-PID Config Reload & Silenced CLI Usage: Enhanced config reload command to support signaling multiple active serve processes, resolved channel race conditions for SIGHUP to ensure stable runtime hot-reloads without process termination, and globally silenced confusing Cobra CLI usage menus on runtime/operational errors.
 - [x] Single-Instance Serve Enforcement: Implemented a robust cross-platform locking mechanism using syscall.Flock (macOS/Linux) and exclusive-file fallbacks (Windows) to prevent concurrent instances of `mls serve` from running, printing a friendly already-running message (with the active PID) and exiting cleanly.
 - [x] Cross-Platform Config Open & Reveal: Created robust OpenPath and RevealPath system helpers in internal/utils supporting macOS, Windows, and Linux natively, and refactored config commands to use them.
-
+- [x] Cross-Platform Documentation & CLI Help Alignment: Fully updated README.md, docs/USER_GUIDE.md, and cmd/config.go help text to remove macOS-only notes for config open/reveal and describe the cross-platform file explorers.
 
 ## Core Project Documentation
 - [Cleanup Estimation Discrepancy Analysis](./docs/Stats_Counting.md)

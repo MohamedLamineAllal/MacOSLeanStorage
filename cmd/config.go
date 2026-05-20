@@ -37,11 +37,11 @@ var openCmd = &cobra.Command{
 }
 
 // revealCmd represents the config reveal subcommand.
-// It highlights/reveals the default configuration file in macOS Finder,
-// which is useful for dragging the configuration file, copying it, or opening it via custom programs.
+// It highlights/reveals the default configuration file in your system's file explorer
+// (macOS Finder, Windows File Explorer, or opening the parent directory on Linux).
 var revealCmd = &cobra.Command{
 	Use:          "reveal",
-	Short:        "Reveal the configuration file in Finder",
+	Short:        "Reveal the configuration file in your system's file explorer",
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		path, err := config.GetDefaultConfigPath()

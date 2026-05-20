@@ -91,3 +91,6 @@ User requested to ensure only a single instance of `mls serve` can run at any gi
 
 ## Prompt: 2026-05-20 (Cross-platform config open and reveal)
 User requested to add robust cross-platform support to `mls config open` and `mls config reveal` to allow operating natively on macOS, Linux, and Windows.
+
+## Prompt: 2026-05-20 (Update docs for cross-platform config open/reveal)
+User requested to update the documentation (README.md and USER_GUIDE.md) to remove the macOS-only limitation note for `mls config open` and `mls config reveal`, marking them as fully cross-platform.

@@ -14,7 +14,7 @@ Refer to [Installation Guide](./INSTALL.md)
 
 When you first run `mls`, it creates a default configuration file in your home directory: `~/.MrLeanStorage.yaml`.
 
-To see where it is or to reveal it in Finder, run:
+To see where it is or to reveal it in your system's file manager (Finder / File Explorer), run:
 
 ```bash
 mls config reveal
@@ -83,7 +83,7 @@ This is ideal for keeping your Mac lean without manual intervention.
 
 ### `config open`
 
-Opens the configuration file in the default application (e.g., your preferred text editor).
+Opens the configuration file in the default application (e.g., your preferred text editor). (Cross-platform)
 
 ```bash
 mls config open
@@ -91,7 +91,7 @@ mls config open
 
 ### `config reveal`
 
-Reveals the configuration file in Finder.
+Reveals the configuration file in your system file explorer (Finder on macOS, File Explorer on Windows, or parent directory on Linux). (Cross-platform)
 
 ```bash
 mls config reveal

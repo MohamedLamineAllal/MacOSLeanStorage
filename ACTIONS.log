@@ -108,3 +108,11 @@ Action: Designed and implemented robust, cross-platform single-instance process 
 
 ## Action: 2026-05-20 (Cross-platform config open and reveal support)
 Action: Extended `mls config open` and `mls config reveal` to operate natively across macOS, Linux, and Windows. Implemented `OpenPath` and `RevealPath` helper functions in `internal/utils/helpers.go` using a clean switch statement on `runtime.GOOS`. `OpenPath` delegates to `open` (macOS), `cmd /c start` (Windows), and `xdg-open` (Linux). `RevealPath` leverages `open -R` (macOS), `explorer /select` (Windows), and opening the parent directory using `xdg-open` (Linux) to guarantee clean native file-manager highlights. Refactored `cmd/config.go` to use these helpers.
+
+## Action: 2026-05-20 (Update docs for cross-platform config open/reveal)
+Action: Updated project documentation and CLI helper messages to match the new cross-platform config open/reveal capabilities.
+Files updated:
+- README.md: Marked mls config open and mls config reveal as (Cross-platform) and refined descriptions.
+- docs/USER_GUIDE.md: Updated command references to remove macOS limitations and added cross-platform explanations.
+- cmd/config.go: Rewrote revealCmd's Short help message and inline comments to reflect cross-platform file explorers (Finder / File Explorer).
+Verified: All tests passed, built successfully, and validated documentation formatting.
