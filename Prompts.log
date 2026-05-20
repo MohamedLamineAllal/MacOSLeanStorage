@@ -44,3 +44,20 @@ Tue May 19 12:10:49 +08 2026
 9. Standardize Extensive.yml with titles and consistency.
 10. Systematically document the codebase file-by-file with GoDoc comments.
 11. Audit and standardize storage persistence.
+
+## Prompts: Gemini CLI Session (May 19 - May 20, 2026)
+1. Optimize scanning and cleaning performance: Implement single-pass directory scanner traversal and parallelize cleanup using a goroutine worker pool.
+2. Build a rigorous testing suite with `-race` race detector for `engine.go` and `command_handler.go` to assert execution order and hooks.
+3. Validate cron/scheduler syntax to expect exactly 6 fields (adding seconds granularity) and address cron sleep/wake drift.
+4. Eliminate hardcoded `/tmp` usage by migrating all temporary file persistence to local application caches under `~/Library/Caches/mls`.
+5. Develop full macOS background automation for the server: `mls agent install`, `start`, `stop`, `status`, `restart`, and `uninstall` utilizing `launchctl`.
+6. Implement a 30-minute missed-task catch-up ticker in the server daemon to handle cron runs missed while the Mac is asleep.
+7. Support hot-reloading configurations gracefully upon receiving `SIGHUP` signal.
+8. Restore missing command features like `mls config open` and `mls config reveal`.
+9. Perform a full audit of cleanup statistics and resolve discrepancies where scanned size differed from deleted size (written to `docs/Stats_Counting.md`).
+10. Systematically apply GoDoc comments across the entire codebase.
+11. Set up CI/CD with GitHub Actions (`release.yml`) and GoReleaser. Configure it to build binaries for macOS/Linux/Windows.
+12. Establish distribution via a custom Homebrew Tap (`homebrew-mls`). Migrate deprecated `brews` block to the newer `homebrew_casks` layout, bypassing macOS quarantine via post-install xattr script, and set up granular GitHub Personal Access Token authentication.
+
+## Prompt: 2026-05-20 (Agy session)
+how can i check models quotas in antigravity ?

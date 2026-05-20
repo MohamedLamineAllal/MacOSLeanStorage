@@ -58,3 +58,20 @@ Action: Standardized docs/configuration/Examples/Extensive.yml with titles.
 Action: Conducted exhaustive documentation audit of core modules (engine, scanner, cleaner, scheduler, config, cmd/agent, cmd/serve) adding GoDoc comments.
 Action: Migrated all transient /tmp usage to persistent storage using utils.GetAppCacheDir().
 Action: Verified all changes with -race detection and comprehensive test suites.
+
+## Actions: Gemini CLI Session (May 19 - May 20, 2026)
+- Performance-Optimized Traverse: Implemented single-pass directory traversing in `internal/scanner/scanner.go` using `os.ReadDir` instead of `filepath.Walk` to speed up macOS scans.
+- Parallelized Deletions: Refactored cleaner in `internal/cleaner/cleaner.go` to delete matched file paths concurrently using a goroutine worker pool.
+- Testing Integrity: Added robust unit tests in `internal/engine/engine_test.go` and `internal/command_handler_test.go` to assert execution state order and run with `-race` thread-safety detection.
+- Persistence Relocation: Shifted all temporary runtime and cache files from `/tmp` to secure, persistent local directories via `utils.GetAppCacheDir()` (`~/Library/Caches/mls`).
+- Background Service Control: Created macOS launchd agent lifecycle commands (`install`, `uninstall`, `start`, `stop`, `status`, `restart`) in `cmd/agent.go` to handle launchd plist execution dynamically.
+- Sleep/Wake Catch-Up: Implemented a 30-minute missed-task catch-up ticker in the `serve` daemon (`cmd/serve.go`) to automatically run cleaning tasks missed while the Mac was asleep.
+- Configuration Reloading: Integrated dynamic hot-reloading configurations in `cmd/serve.go` and `cmd/config.go` on receiving `SIGHUP` signals.
+- Config CLI Commands: Re-introduced and polished missing commands `mls config open` and `mls config reveal`.
+- Statistics Audit: Analyzed discrepancies between scanned size estimates and actual deleted file counts, saving the results in `docs/Stats_Counting.md`.
+- Codebase-Wide GoDocs: Systematically applied GoDoc comments for all public and private functions, types, and structs across the codebase.
+- Homebrew Distribution Automation: Established automated release pipeline using GitHub Actions (`release.yml`) and GoReleaser (`.goreleaser.yaml`) to build binaries for macOS/Linux/Windows, publishing the formula to custom Tap `homebrew-mls` via GoReleaser's `homebrew_casks` mapping.
+- Authentication & Quarantine Bypass: Resolved Homebrew Tap publishing 403 errors by configuring granular GitHub personal access tokens, and implemented a post-install quarantine removal script (`xattr -dr com.apple.quarantine`) for signed binaries.
+
+## Action: 2026-05-20 (Agy session)
+Action: Answered query regarding how to check model quotas in the Antigravity CLI (agy) environment.

@@ -1,17 +1,33 @@
 # Project Memory Index
 
 ## Current Status
-- **Phase:** Stable / Maintenance
-- **Core Functionality:** Performance-optimized scanning (single-pass) and parallelized cleaning.
-- **Background Automation:** Full lifecycle management (`install`, `start`, `stop`, `restart`, `uninstall`) for macOS `launchd` background agents.
-- **Persistence:** All state files and logs migrated to persistent cache (`~/Library/Caches/mls`).
-- **Reliability:** 30-minute missed-task catch-up ticker and graceful config reloading via `SIGHUP`.
+- **Phase:** Stable / Maintenance / Deployment & Distribution
+- **Core Functionality:** Performance-optimized directory scanning (single-pass) and concurrent deletion (goroutine worker pools).
+- **Background Automation:** Full daemon lifecycle command suite (`install`, `start`, `stop`, `status`, `restart`, `uninstall`) for macOS `launchd` background services.
+- **Reliability:** Graceful hot-reloads via `SIGHUP` signal and 30-minute missed-task catch-up ticker to handle sleep/wake schedules.
+- **Persistence:** Full migration from volatile `/tmp` to local application caches (`~/Library/Caches/mls`).
+- **Distribution:** Automatic release builds for Darwin/Linux/Windows via GoReleaser and deployment to Homebrew Tap `homebrew-mls`.
 
-## Documentation
+## Completed Tasks & Milestones
+- [x] Engine Scan & Clean Optimization: Single-pass scanning (`os.ReadDir`) and concurrent cleaning (worker pools).
+- [x] Comprehensive Testing: Thread-safety validation using `go test -race` for scan/clean engine and commands.
+- [x] Background Daemon: Standardized `mls agent` commands to control and install/uninstall macOS background service plist.
+- [x] Sleep-Wake Ticker: Missed task recovery ticker running every 30 minutes in background daemon.
+- [x] Dynamic Hot-Reload: Instant runtime configuration reloading via `SIGHUP`.
+- [x] Storage Persistence: App Cache Directory relocation (`~/Library/Caches/mls`).
+- [x] Stats discrepancy audit: Analysis on scanned vs deleted stats (`docs/Stats_Counting.md`).
+- [x] Automated Releases: End-to-end multi-platform build and deployment setup using GitHub Actions and GoReleaser.
+- [x] Homebrew Integration: Setup and deployment via custom Tap `homebrew-mls` utilizing fine-grained PAT and quarantine-bypassing post-install hook.
+
+## Core Project Documentation
 - [Cleanup Estimation Discrepancy Analysis](./docs/Stats_Counting.md)
 - [Background Service Setup](./README.md#background-automation-macos)
 - [Standardized Configuration](./docs/configuration/Examples/default.yml)
+- [Release Process Guidelines](./docs/RELEASE_PROCESS.md)
+- [Testing Guide](./docs/dev/TESTING.md)
+- [System Architecture](./docs/architecture/ARCHITECTURE.md)
 
 ## Pending / Future Considerations
-- Periodic review of cache locations for newly integrated apps.
-- Potential further optimization for extremely high-concurrency target sets.
+- Regular audit and updates of target app cache paths in `default.yml` & `Extensive.yml`.
+- Monitoring Homebrew tap installations and binary signature notarization for newer macOS updates.
+- Refinement of cleanup duration stats to provide execution-time metrics.
