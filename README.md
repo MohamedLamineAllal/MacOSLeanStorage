@@ -1,4 +1,4 @@
-# MacosLeanStorage (mls)
+# MrLeanStorage (mls)
 
 `mls` is a high-performance storage cleanup tool for macOS, designed to safely and efficiently clean up large cache and temporary files. Written in Go, it features a small memory footprint, a seamless user experience, and extensive CLI helper commands. It includes a built-in daemon mode that runs daily cleanup tasks automatically.
 
@@ -21,7 +21,7 @@ See the [Installation Guide](./docs/INSTALL.md) for detailed instructions on ins
 
 ### 1. Initialize Configuration
 
-The tool automatically creates a default configuration file at `~/.MacosLeanStorage.yaml` on the first run.
+The tool automatically creates a default configuration file at `~/.MrLeanStorage.yaml` on the first run.
 
 ### 2. Scan for Old Files
 
@@ -63,7 +63,7 @@ mls agent uninstall
 
 ## Configuration
 
-You can modify or create your configuration file at `~/.MacosLeanStorage.yaml`:
+You can modify or create your configuration file at `~/.MrLeanStorage.yaml`:
 
 it looks like
 
@@ -113,17 +113,23 @@ go test -race ./...
 Refer to [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) for information on versioning, release workflows, and binary distribution best practices.
 
 ## Multi-platform Support
+
 `mls` is designed to be cross-platform and should work on macOS, Linux, and Windows. However, we are currently focusing our development efforts primarily on macOS. With time, we plan to improve and expand support for other platforms.
 
 Please note that the background agent management commands (`mls agent ...`) are currently supported **only on macOS**. We will update this section as support for background services on other platforms is implemented.
 
 The rest of the commands should work on all platforms:
-- `mls scan`: Scans targets for stale files and directories based on your configuration.
-- `mls clean`: Deletes stale files and directories identified during a scan.
-- `mls serve`: Starts the background scheduler loop to perform automated cleanup.
+
+- `mls scan`: Scans targets for files and directories to clean based on your configuration.
+- `mls clean`: Scan and deletes files and directories identified during the scan.
+- `mls serve`: Starts the background scheduler loop to perform automated cleanup. You can use it with CLI on any platform, you can set it up as a daemon, or start when the system start.
 - `mls config open`: Opens the configuration file in your default system editor.
+  - (Works only on MacOS, we will update this for cross platform)
 - `mls config reveal`: Reveals the configuration file location in your file explorer.
+  - (Works only on MacOS, we will update this for cross platform)
 - `mls config reload`: Signals the running `mls serve` daemon to reload its configuration.
+  - (Works only on Macos, we will update this for cross platform)
+  - Stop `mls serve` and start it again to reload.
 
 If you don't want to wait for the Daemon support on other platforms you can setup yours, with `mls serve`. Ask `gemini` or `gpt` for how to set up a daemon on linux or windows for `mls serve` command. `mls serve` will handle the rest for you.
 

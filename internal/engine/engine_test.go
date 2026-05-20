@@ -3,8 +3,8 @@ package engine
 import (
 	"testing"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scanner"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

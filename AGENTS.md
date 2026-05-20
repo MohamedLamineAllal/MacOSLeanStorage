@@ -1,4 +1,4 @@
-# MacosLeanStorage (mls)
+# MrLeanStorage (mls)
 
 Make sure to read all the bellow and all instruction bellow. Make sure to adhere to them. Check Agentic workflow and Memory logic. Code style ...
 

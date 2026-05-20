@@ -13,7 +13,7 @@ func TestCreateDefaultConfig(t *testing.T) {
 	assert.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	configPath := filepath.Join(tempDir, ".MacosLeanStorage.yaml")
+	configPath := filepath.Join(tempDir, ".MrLeanStorage.yaml")
 	err = CreateDefaultConfig(configPath)
 	assert.NoError(t, err)
 
@@ -33,5 +33,5 @@ func TestCreateDefaultConfig(t *testing.T) {
 func TestGetDefaultConfigPath(t *testing.T) {
 	path, err := GetDefaultConfigPath()
 	assert.NoError(t, err)
-	assert.Contains(t, path, ".MacosLeanStorage.yaml")
+	assert.Contains(t, path, ".MrLeanStorage.yaml")
 }

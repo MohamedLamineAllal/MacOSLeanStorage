@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
 	"github.com/spf13/cobra"
 )
 

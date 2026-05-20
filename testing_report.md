@@ -1,4 +1,4 @@
-# MacosLeanStorage Testing Report
+# MrLeanStorage Testing Report
 
 **Date:** Saturday, May 16, 2026
 
@@ -13,26 +13,26 @@ All implemented tests for the core packages (`config`, `scanner`, `cleaner`, `sc
 === RUN   TestCleanDryRun
 --- PASS: TestCleanDryRun (0.00s)
 PASS
-ok      github.com/mohamedlamineallal/MacosLeanStorage/internal/cleaner
+ok      github.com/mohamedlamineallal/MrLeanStorage/internal/cleaner
 
 === RUN   TestCreateDefaultConfig
 --- PASS: TestCreateDefaultConfig (0.00s)
 === RUN   TestGetDefaultConfigPath
 --- PASS: TestGetDefaultConfigPath (0.00s)
 PASS
-ok      github.com/mohamedlamineallal/MacosLeanStorage/internal/config
+ok      github.com/mohamedlamineallal/MrLeanStorage/internal/config
 
 === RUN   TestScan
 --- PASS: TestScan (0.00s)
 === RUN   TestExpandPath
 --- PASS: TestExpandPath (0.00s)
 PASS
-ok      github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner
+ok      github.com/mohamedlamineallal/MrLeanStorage/internal/scanner
 
 === RUN   TestScheduler
 --- PASS: TestScheduler (0.58s)
 PASS
-ok      github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler
+ok      github.com/mohamedlamineallal/MrLeanStorage/internal/scheduler
 ```
 
 ## Coverage

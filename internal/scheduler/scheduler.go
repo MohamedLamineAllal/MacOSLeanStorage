@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/utils"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/utils"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )

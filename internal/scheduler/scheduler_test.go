@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/utils"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/utils"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -42,13 +42,13 @@ func TestShouldRunCommand(t *testing.T) {
 	statePath := filepath.Join(utils.GetAppCacheDir(), fmt.Sprintf("mls-cmd-%s.lastrun", commandName))
 	os.Remove(statePath) // Ensure clean state
 	defer os.Remove(statePath)
-	
+
 	// Test first run (should run)
 	assert.True(t, s.ShouldRunCommand(commandName, 30))
-	
+
 	// Record run
 	s.UpdateCommandRunTime(commandName)
-	
+
 	// Test immediate check (should not run)
 	assert.False(t, s.ShouldRunCommand(commandName, 30))
 }

@@ -1,4 +1,4 @@
-// Package cmd implements the CLI commands for MacosLeanStorage.
+// Package cmd implements the CLI commands for MrLeanStorage.
 // It provides the entry point for the "serve" command which runs the cleanup agent.
 package cmd
 
@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/cleaner"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/cleaner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scanner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scheduler"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )

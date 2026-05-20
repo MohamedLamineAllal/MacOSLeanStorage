@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/engine"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/engine"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scanner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scheduler"
 	"github.com/schollz/progressbar/v3"
 	"go.uber.org/zap"
 )

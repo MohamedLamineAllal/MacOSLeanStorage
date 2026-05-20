@@ -1,4 +1,4 @@
-# MacosLeanStorage (mls) Design Specifications
+# MrLeanStorage (mls) Design Specifications
 
 This document outlines the low-level design decisions for the `mls` tool, focusing on performance, efficiency, and safety.
 

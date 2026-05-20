@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"testing"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
+
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -10,7 +11,7 @@ import (
 func TestProcessor_Run(t *testing.T) {
 	logger := zap.NewNop()
 	tp := NewTargetProcessor(logger, nil, true)
-	
+
 	targets := []config.TargetConfig{
 		{
 			Name: "Test Target",
@@ -19,7 +20,7 @@ func TestProcessor_Run(t *testing.T) {
 			Type: "file",
 		},
 	}
-	
+
 	err := tp.Run(targets, false, false)
 	assert.NoError(t, err)
 }

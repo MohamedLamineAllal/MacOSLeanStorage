@@ -4,8 +4,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scheduler"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scheduler"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -23,7 +23,7 @@ func TestCommandHandler_Handle_DryRun(t *testing.T) {
 	// MockCleaner with DryRun=true
 	cleaner := &MockCleaner{dryRun: true}
 	e := New(logger, &MockScanner{}, cleaner, nil)
-	s := &scheduler.Scheduler{} 
+	s := &scheduler.Scheduler{}
 	ch := NewCommandHandler(e, s, logger)
 
 	target := config.TargetConfig{
@@ -43,12 +43,12 @@ func TestCommandHandler_HookSequence(t *testing.T) {
 
 	var sequence []string
 	var mu sync.Mutex
-	
+
 	target := config.TargetConfig{
 		Name:    "HookTarget",
 		Command: "echo hello",
 	}
-	
+
 	hooks := CommandHooks{
 		BeforeHandleCommand:    func(name, cmd string, should bool) { mu.Lock(); sequence = append(sequence, "before_handle"); mu.Unlock() },
 		BeforeExecutingCommand: func(name, cmd string) { mu.Lock(); sequence = append(sequence, "before_exec"); mu.Unlock() },

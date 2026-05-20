@@ -51,13 +51,13 @@ func Load() (*Config, error) {
 }
 
 // GetDefaultConfigPath returns the standard absolute path for the application configuration file,
-// which defaults to ~/.MacosLeanStorage.yaml.
+// which defaults to ~/.MrLeanStorage.yaml.
 func GetDefaultConfigPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".MacosLeanStorage.yaml"), nil
+	return filepath.Join(home, ".MrLeanStorage.yaml"), nil
 }
 
 // CreateDefaultConfig generates a default configuration file with a predefined set of cleanup targets.

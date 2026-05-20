@@ -1,6 +1,6 @@
 # Storage Analysis Report - May 17, 2026
 
-This report documents the findings of a system storage audit performed to refine the cleanup strategy for `MacosLeanStorage`.
+This report documents the findings of a system storage audit performed to refine the cleanup strategy for `MrLeanStorage`.
 
 ## Audit Results
 The following directories were scanned to identify significant storage consumers on the current development machine:

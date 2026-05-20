@@ -1,4 +1,4 @@
-module github.com/mohamedlamineallal/MacosLeanStorage
+module github.com/mohamedlamineallal/MrLeanStorage
 
 go 1.26.2
 

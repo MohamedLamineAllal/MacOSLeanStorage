@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/engine"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/engine"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
 
 func TestScanAndCleanSizeConsistency(t *testing.T) {
 	logger := zap.NewNop()
-	
+
 	// Setup a temporary directory for the test
 	tempDir, err := os.MkdirTemp("", "mls-consistency-test")
 	assert.NoError(t, err)
@@ -28,7 +28,7 @@ func TestScanAndCleanSizeConsistency(t *testing.T) {
 	//   subfolder/ (stale folder)
 	//     file1.txt (30 bytes)
 	//     .ds_store (ignored, 100 bytes)
-	
+
 	oldFile := filepath.Join(tempDir, "old_file.txt")
 	newFile := filepath.Join(tempDir, "new_file.txt")
 	subFolder := filepath.Join(tempDir, "subfolder")

@@ -1,4 +1,4 @@
-# Architecture: MacosLeanStorage
+# Architecture: MrLeanStorage
 
 ## 1. Project Goal
 Build a high-performance, safe, and efficient storage cleanup tool for macOS, focused on developer and browser data.

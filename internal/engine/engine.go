@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/cleaner"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/scanner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/cleaner"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/scanner"
 	"go.uber.org/zap"
 )
 
@@ -134,13 +134,13 @@ func (e *Engine) Scan(targets []config.TargetConfig, hooks Hooks) (map[string]*s
 func (e *Engine) Clean(resultMap map[string]*scanner.Result, targets []config.TargetConfig, hooks Hooks) (int, int64, error) {
 	aggregator := &ResultAggregator{UniquePaths: make(map[string]int64)}
 	numWorkers := runtime.NumCPU()
-	
+
 	type job struct {
 		target config.TargetConfig
 		res    *scanner.Result
 	}
 	jobs := make(chan job, len(targets))
-	
+
 	var wg sync.WaitGroup
 	// Initialize workers for parallel cleanup
 	for i := 0; i < numWorkers; i++ {
@@ -150,7 +150,7 @@ func (e *Engine) Clean(resultMap map[string]*scanner.Result, targets []config.Ta
 			for j := range jobs {
 				// Use thread-safe aggregator for unique path tracking
 				aggregator.Add(j.res.Files, j.res.FileSizes)
-				
+
 				// Execute parallel cleanup
 				_, _, err := e.cleaner.Clean(j.res.Files, hooks.OnFileCleaned)
 				if err != nil {

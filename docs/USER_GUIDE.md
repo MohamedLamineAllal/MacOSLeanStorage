@@ -1,7 +1,7 @@
-# MacosLeanStorage User Guide
+# MrLeanStorage User Guide
 
 ## Introduction
-MacosLeanStorage (mls) is a command-line tool designed to help macOS users reclaim storage space by cleaning up old cache and temporary files. It specifically targets directories that tend to grow large over time, such as browser caches and developer tool temporary files.
+MrLeanStorage (mls) is a command-line tool designed to help macOS users reclaim storage space by cleaning up old cache and temporary files. It specifically targets directories that tend to grow large over time, such as browser caches and developer tool temporary files.
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ MacosLeanStorage (mls) is a command-line tool designed to help macOS users recla
 - Go (if building from source)
 
 ### Initial Setup
-When you first run `mls`, it creates a default configuration file in your home directory: `~/.MacosLeanStorage.yaml`. 
+When you first run `mls`, it creates a default configuration file in your home directory: `~/.MrLeanStorage.yaml`.
 
 To see where it is or to reveal it in Finder, run:
 ```bash
@@ -35,7 +35,7 @@ mls scan
 ```
 
 **New in v1.1:**
-- **Concise Output**: `mls scan` now provides a per-target summary by default. 
+- **Concise Output**: `mls scan` now provides a per-target summary by default.
 - **Detailed Match Listing**: Individual files/folders are only listed if there are 10 or fewer matches.
 - **Verbose Flag**: To see a full list of all matching items regardless of the count, use the `--verbose` or `-v` flag:
   ```bash
@@ -43,7 +43,7 @@ mls scan
   ```
 
 ### `clean`
-The `clean` command performs a scan and then deletes the matched files. 
+The `clean` command performs a scan and then deletes the matched files.
 **Note:** By default, `clean` runs in **Dry Run** mode. It will show you what it *would* delete but won't actually perform the deletion.
 
 ```bash
@@ -51,7 +51,7 @@ mls clean
 ```
 
 To actually delete the files, you have two options:
-1. Set `dry_run: false` in your `~/.MacosLeanStorage.yaml`.
+1. Set `dry_run: false` in your `~/.MrLeanStorage.yaml`.
 2. Use the command line flag to override the default:
    ```bash
    mls clean --dry-run=false

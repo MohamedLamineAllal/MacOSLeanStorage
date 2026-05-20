@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -23,7 +23,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "mls",
 	Short: "A high-performance storage cleanup tool for macOS",
-	Long: `MacosLeanStorage (mls) is a tool designed to safely and efficiently clean up
+	Long: `MrLeanStorage (mls) is a tool designed to safely and efficiently clean up
 large cache and temporary files on macOS.
 
 It focuses on performance, safety (dry-run by default), and multi-profile support.`,
@@ -42,7 +42,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initLogger, initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.MacosLeanStorage.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.MrLeanStorage.yaml)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose logging")
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", true, "Enable dry-run mode (no files deleted)")
 

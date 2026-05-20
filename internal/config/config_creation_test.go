@@ -13,8 +13,8 @@ func TestCreateDefaultConfig_WithMissingDir(t *testing.T) {
 	assert.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	configPath := filepath.Join(tempDir, "subdir", ".MacosLeanStorage.yaml")
-	
+	configPath := filepath.Join(tempDir, "subdir", ".MrLeanStorage.yaml")
+
 	// This should now succeed
 	err = CreateDefaultConfig(configPath)
 	assert.NoError(t, err)

@@ -23,8 +23,8 @@ archives:
 nfpms:
   - id: mls
     package_name: mls
-    vendor: MacosLeanStorage
-    homepage: https://github.com/MohamedLamineAllal/MacOSLeanStorage
+    vendor: MrLeanStorage
+    homepage: https://github.com/MohamedLamineAllal/MrLeanStorage
     maintainer: Mohamed Lamine Allal <allalmohamedlamine@gmail.com>
     description: High-performance storage cleanup tool
     formats:
@@ -35,14 +35,14 @@ nfpms:
 release:
   github:
     owner: MohamedLamineAllal
-    name: MacOSLeanStorage
+    name: MrLeanStorage
   name_template: "Release {{ .Tag }}"
   header: |
-    # MacosLeanStorage {{ .Tag }}
-    
+    # MrLeanStorage {{ .Tag }}
+
     A high-performance storage cleanup tool for macOS, designed to safely and efficiently clean up large cache and temporary files.
   footer: |
     ## Installation
     Download the binary for your platform, or install via package manager (deb/rpm) provided above.
-    
-    See [README.md](https://github.com/MohamedLamineAllal/MacOSLeanStorage/blob/main/README.md) for installation and usage guides.
+
+    See [README.md](https://github.com/MohamedLamineAllal/MrLeanStorage/blob/main/README.md) for installation and usage guides.
