@@ -1,8 +1,7 @@
 # MrLeanStorage User Guide
 
 ## Introduction
-MrLeanStorage (`mls`) is a high-performance cleanup tool with a low memory footprint, written in Go, designed to help macOS and cross-platform users safely reclaim storage space by cleaning up old cache and temporary files. It specifically targets directories that tend to grow large over time, such as browser caches and developer tool temporary files. `mls` comes out of the box with an easy-to-use custom configuration structure, starting with a sensible default configuration file that is highly extensible. You can easily extend it to fit your needs, and explore the configuration examples provided in our repository for advanced setups.
-
+MrLeanStorage (`mls`) is a high-performance cleaning tool with a low memory footprint, written in Go, designed to safely and efficiently reclaim disk space. Cleaning is driven entirely by an easy-to-use configuration file. `mls` comes out of the box with a sensible default configuration file that makes it incredibly easy to get started, and it is highly extensible so you can easily add or update targets to fit your own specific needs. Additionally, `mls` goes beyond simple file deletion by providing the ability to execute custom system commands (such as package manager pruning) directly within the cleanup cycle, making it a comprehensive and powerful cleanup solution. You can also explore the configuration examples provided in our repository for advanced setups.
 
 ## Getting Started
 

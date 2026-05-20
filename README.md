@@ -1,6 +1,6 @@
 # MrLeanStorage (mls)
 
-`mls` (MrLeanStorage) is a high-performance cleaning tool with a low memory footprint, written in Go, designed to safely and efficiently reclaim disk space. Out of the box, `mls` comes with a default configuration that makes it incredibly easy to get started, and is highly extensible so you can easily adapt and extend it to fit your custom cleanup needs. You can also explore the configuration examples provided in this repository to customize your rules.
+`mls` (MrLeanStorage) is a high-performance cleaning tool with a low memory footprint, written in Go, designed to safely and efficiently reclaim disk space. Cleaning is driven entirely by an easy-to-use configuration file. `mls` comes out of the box with a sensible default configuration file that makes it incredibly easy to get started, and it is highly extensible so you can easily add or update targets to fit your own specific needs. Additionally, `mls` goes beyond simple file deletion by providing the ability to execute custom system commands (such as package manager pruning) directly within the cleanup cycle, making it a comprehensive and powerful cleanup solution. You can also explore the configuration examples provided in this repository for advanced setups.
 
 ---
 

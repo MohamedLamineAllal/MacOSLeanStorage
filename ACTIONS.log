@@ -88,4 +88,5 @@ Action: Enriched documentation across the project:
 5. Added community Pull Request (PR) contribution guidelines and links under the examples section.
 6. Rewrote docs/INSTALL.md to dynamically query the GitHub Releases API for Linux and Windows downloads.
 
-
+## Action: 2026-05-20 (Refine MrLeanStorage description)
+Action: Rewrote the MrLeanStorage introduction in README.md and docs/USER_GUIDE.md to emphasize configuration-driven cleaning, personal customization, the sensible default configuration file, and the ability to execute custom system cleaning commands.
