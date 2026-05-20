@@ -14,11 +14,22 @@ builds:
       - arm64
 
 archives:
+  # Standard tar.gz archives for Linux and macOS
   - id: default
+    goos:
+      - linux
+      - darwin
+    formats:
+      - tar.gz
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
-    format_overrides:
-      - goos: windows
-        format: zip
+
+  # Separate archive configuration to cleanly output .zip files for Windows
+  - id: windows-zip
+    goos:
+      - windows
+    formats:
+      - zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
 
 nfpms:
   - id: mls
@@ -47,7 +58,7 @@ release:
   footer: |
     See [README.md](https://github.com/MohamedLamineAllal/MrLeanStorage/blob/main/README.md) for installation and usage guides.
 
-brews:
+homebrew_casks:
   - repository:
       owner: MohamedLamineAllal
       name: homebrew-mls
