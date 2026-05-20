@@ -188,3 +188,10 @@ Action: Updated .github/workflows/ci.yml to use a matrix strategy running go bui
     - Added --open flag to logCmd.
     - Updated documentation (README.md, USER_GUIDE.md, CHANGELOG.md) to reflect the flag-based usage.
 - **Verification:** Built binary on macOS and verified mls agent log --open trigger.
+
+### 2026-05-20
+- **Action:** Bumped project version to v0.1.6 in documentation.
+- **Context:** User confirmed that v0.1.5 was already published, so current unreleased features belong to v0.1.6.
+- **Implementation:** 
+    - Moved the cross-platform agent log features to a new [0.1.6] section in CHANGELOG.md.
+    - Updated MEMORY.md to reflect the current development version as v0.1.6.

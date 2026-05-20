@@ -153,3 +153,7 @@ Also how can i make sure the release description will reflect the newer version
 ## Prompt: 2026-05-20
 it should be mls agent log --open
 instead
+
+## Prompt: 2026-05-20
+this should be v0.1.6 right as i already did publish v0.1.5
+if i don't bump the version people will not get the latest ??

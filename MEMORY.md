@@ -2,9 +2,10 @@
 
 ## Current Status
 - **Phase:** Stable / Maintenance / Deployment & Distribution
+- **Version:** v0.1.6 (Planned/Development)
 - **Core Functionality:** Performance-optimized directory scanning (single-pass) and concurrent deletion (goroutine worker pools).
-- **Background Automation:** Full daemon lifecycle command suite (`install`, `start`, `stop`, `status`, `restart`, `uninstall`) for macOS `launchd` background services.
-- **Reliability:** Graceful hot-reloads via `SIGHUP` signal and 30-minute missed-task catch-up ticker to handle sleep/wake schedules.
+- **Background Automation:** Native background service management for macOS (launchd), Linux (systemd), and Windows (Scheduled Tasks).
+- **Reliability:** Graceful hot-reloads via `SIGHUP` signal/TCP loopback and 30-minute missed-task catch-up ticker to handle sleep/wake schedules.
 - **Persistence:** Full migration from volatile `/tmp` to local application caches (`~/Library/Caches/mls`).
 - **Distribution:** Automatic release builds for Darwin/Linux/Windows via GoReleaser and deployment to Homebrew Tap `homebrew-mls`.
 
@@ -27,9 +28,9 @@
 - [x] Cross-Platform Documentation & CLI Help Alignment: Fully updated README.md, docs/USER_GUIDE.md, and cmd/config.go help text to remove macOS-only notes for config open/reveal and describe the cross-platform file explorers.
 - [x] Strict Prompt Logging Rule: Updated AGENTS.md to mandate that user prompts are logged exactly as they are given, without paraphrasing or truncating.
 - [x] Purely Event-Driven Cross-Platform Config Reload: Refactored the config reload mechanism to be purely event-driven, removing all periodic file polling/tickers. Uses OS-native SIGHUP signaling on Unix (macOS/Linux) and an OS-allocated local loopback TCP port listener on Windows that blocks on Accept(), guaranteeing zero idle CPU and memory usage.
-- [x] Cross-Platform Agent Management: Implemented native background service management for macOS (launchd), Linux (systemd), and Windows (Scheduled Tasks). Split `agent.go` into platform-specific files (`agent_darwin.go`, `agent_windows.go`, `agent_linux.go`, and `agent_other.go`) and updated documentation to reflect cross-platform support.
-- [x] Agent Guidelines Update: Mandated append-only logging for `Prompts.log` and `ACTIONS.log` in `AGENTS.md` to ensure complete interaction history.
-- [x] Cross-Platform Agent Logs: Implemented `mls agent log` command with `--live` and `--path` support across macOS, Linux, and Windows. Updated background service definitions to redirect output to `agent.log`.
+- [x] Cross-Platform Agent Management (v0.1.5): Implemented native background service management for macOS (launchd), Linux (systemd), and Windows (Scheduled Tasks). Split `agent.go` into platform-specific files (`agent_darwin.go`, `agent_windows.go`, `agent_linux.go`, and `agent_other.go`) and updated documentation to reflect cross-platform support.
+- [x] Agent Guidelines Update (v0.1.5): Mandated append-only logging for `Prompts.log` and `ACTIONS.log` in `AGENTS.md` to ensure complete interaction history.
+- [x] Cross-Platform Agent Logs (v0.1.6): Implemented `mls agent log` command with `--live`, `--path`, and `--open` support across macOS, Linux, and Windows. Updated background service definitions to redirect output to `agent.log`.
 
 
 ## Core Project Documentation

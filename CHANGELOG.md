@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.5] - 2026-05-20
+## [0.1.6] - 2026-05-20
 
 ### Added
 - **Cross-Platform Agent Log**: New `mls agent log` command with `--live`, `--path`, and `--open` support across macOS, Linux, and Windows.
+
+## [0.1.5] - 2026-05-20
+
+### Added
 - **Cross-Platform Agent Management**: Native background service management for Linux (`systemd`) and Windows (`Scheduled Tasks`).
 - **High-Performance Orchestration**: Overlapping scan-and-clean engine to minimize I/O wait times.
 - **Event-Driven Reloads**: Zero-idle CPU config reloading using `SIGHUP` (Unix) and TCP loopback (Windows).
