@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/mohamedlamineallal/MrLeanStorage/internal/config"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +32,7 @@ var openCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return exec.Command("open", path).Run()
+		return utils.OpenPath(path)
 	},
 }
 
@@ -47,7 +48,7 @@ var revealCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return exec.Command("open", "-R", path).Run()
+		return utils.RevealPath(path)
 	},
 }
 

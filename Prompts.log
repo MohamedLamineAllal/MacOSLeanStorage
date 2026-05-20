@@ -88,3 +88,6 @@ User reported that after sending the SIGHUP signal (dynamic configuration reload
 
 ## Prompt: 2026-05-20 (Enforce single-instance mls serve)
 User requested to ensure only a single instance of `mls serve` can run at any given time. If another process is already running, the new process should print a message stating that it is already running and exit cleanly.
+
+## Prompt: 2026-05-20 (Cross-platform config open and reveal)
+User requested to add robust cross-platform support to `mls config open` and `mls config reveal` to allow operating natively on macOS, Linux, and Windows.
