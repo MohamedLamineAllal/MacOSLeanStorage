@@ -75,3 +75,7 @@ Action: Verified all changes with -race detection and comprehensive test suites.
 
 ## Action: 2026-05-20 (Agy session)
 Action: Answered query regarding how to check model quotas in the Antigravity CLI (agy) environment.
+
+## Action: 2026-05-20 (Homebrew installation checksum mismatch)
+Action: Analyzed and resolved the Homebrew formula checksum mismatch issue. Synchronized the local Homebrew tap `/opt/homebrew/Library/Taps/mohamedlamineallal/homebrew-mls` by pulling the latest remote commits, which removed the outdated, placeholder-based `mls.rb` Formula and properly positioned `mls` as a Cask (`Casks/mls.rb`).
+

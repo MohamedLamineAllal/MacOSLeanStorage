@@ -61,3 +61,14 @@ Tue May 19 12:10:49 +08 2026
 
 ## Prompt: 2026-05-20 (Agy session)
 how can i check models quotas in antigravity ?
+
+## Prompt: 2026-05-20 (Homebrew installation checksum mismatch)
+User reports that running "brew install mls --formula" fails with checksum verification error:
+Error: Formula reports different checksum:  replace_with_sha256_hash
+       SHA-256 checksum of downloaded file: c4c2ff0701f59f1535bd7478db2e9d384c099ba79ded22c1f78aebe97d7348b5
+Why is this and how can we fix this?
+
+## Prompt: 2026-05-20 (Refine README, docs user guide, and INSTALL.md)
+User wants to refine README.md, docs/ USER_GUIDE.md, and update docs/INSTALL.md to reflect the latest Homebrew Cask installation changes for macOS and Linux.
+
+

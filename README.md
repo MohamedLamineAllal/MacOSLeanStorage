@@ -1,138 +1,167 @@
 # MrLeanStorage (mls)
 
-`mls` is a high-performance storage cleanup tool for macOS, designed to safely and efficiently clean up large cache and temporary files. Written in Go, it features a small memory footprint, a seamless user experience, and extensive CLI helper commands. It includes a built-in daemon mode that runs daily cleanup tasks automatically.
+`mls` is a high-performance, concurrent storage cleanup tool for macOS (with cross-platform support for Linux and Windows), designed to safely and efficiently reclaim disk space. Written in Go, it features a small memory footprint, a seamless user experience, and a built-in background daemon.
 
-## Performance
+---
 
-`mls` utilizes a parallel worker pool pattern to scan multiple cleanup targets concurrently, significantly reducing scan times. The scanning engine is optimized for high-throughput I/O and resource-efficient processing, ensuring maximum performance on modern multi-core systems.
+## ⚡ Key Features
 
-## Features
+- **🚀 Concurrency Engine**: Uses high-performance goroutine worker pools in both the scanner (`os.ReadDir` based) and cleaner to scan and delete files simultaneously, maximizing macOS SSD throughput.
+- **🔄 Zero-Downtime Hot Reloads**: Supports instant configuration reloading via `SIGHUP` signal without terminating the running background daemon.
+- **🛌 Missed-Task Recovery Ticker**: Background daemon runs an automatic missed-task recovery ticker every 30 minutes to catch up on cleanup runs that were missed while your Mac was asleep.
+- **📦 Application Cache Migration**: State files (e.g., last-run logs) are safely persisted under the persistent local cache (`~/Library/Caches/mls`) rather than the volatile `/tmp` directory.
+- **🛡️ Dry-Run Safety**: Defaults to a strict dry-run mode so you can preview exactly which files will be deleted before taking any destructive action.
+- **🤖 launchd Background Integration**: Complete agent management CLI to install, start, stop, restart, and inspect background services seamlessly on macOS.
 
-- **Daemon Mode**: Built-in scheduler to perform cleanup tasks automatically.
-- **Configurable**: Easily modify your cleanup targets via a simple YAML configuration file.
-- **Customizable**: Extensive CLI helpers allow you to manage targets, agent status, and settings easily.
-- **Dry-run**: Defaults to dry-run mode to prevent accidental data loss.
+---
 
-## Installation
+## 📦 Installation
 
-See the [Installation Guide](./docs/INSTALL.md) for detailed instructions on installing `mls` on macOS, Linux, and Windows, including pre-built binaries and building from source.
+For full multi-platform instructions, see the detailed [Installation Guide](./docs/INSTALL.md).
 
-## Usage
+### macOS (Homebrew Cask) — Recommended
 
-### 1. Initialize Configuration
+`mls` is distributed as a Homebrew Cask via a custom Tap for seamless macOS installation and automatic quarantine bypass:
 
-The tool automatically creates a default configuration file at `~/.MrLeanStorage.yaml` on the first run.
+```bash
+# Add our custom Tap
+brew tap MohamedLamineAllal/mls
+
+# Install mls
+brew install mls
+```
+
+*Note: Homebrew will automatically map this to our Cask distribution. If you encounter any checksum errors from outdated Formula caches, resolve them by running `brew update && brew tap --repair` first.*
+
+### Linux & Windows
+
+For Debian/Ubuntu (`.deb`), RedHat/Fedora (`.rpm`), or Windows manual installations, please refer to the [Installation Guide](./docs/INSTALL.md#2-linux-pre-built-packages).
+
+---
+
+## 🚀 Usage
+
+### 1. Initialize & Open Configuration
+
+On first run, `mls` automatically creates a default configuration file at `~/.MrLeanStorage.yaml`.
+
+```bash
+# Open configuration in your default editor
+mls config open
+
+# Reveal configuration location in Finder
+mls config reveal
+```
 
 ### 2. Scan for Old Files
+
+Analyze the configured targets and view matched files and sizes:
 
 ```bash
 mls scan
 ```
 
-### 3. Clean Files (Dry Run)
+Use the verbose flag to output all matches beyond the default summary:
+
+```bash
+mls scan -v
+```
+
+### 3. Clean Files (Dry Run & Confirmation)
+
+Dry run to preview deletions:
 
 ```bash
 mls clean
 ```
 
-### 4. Background Automation (macOS)
-
-`mls` can run automatically in the background using `launchd`.
-
-#### Manage Background Agent
+Execute the real cleanup by disabling dry-run:
 
 ```bash
-# Install the agent
+mls clean --dry-run=false
+```
+
+---
+
+## ⏰ Background Automation (macOS)
+
+Manage the background daemon seamlessly using standard `launchd` controls built right into the CLI:
+
+```bash
+# Install the launchd background agent
 mls agent install
 
-# Start the agent
+# Start the background service
 mls agent start
 
-# Restart the agent
-mls agent restart
-
-# Check agent status
+# Check background daemon status
 mls agent status
 
-# Stop the agent
+# Restart / Hot reload configuration
+mls agent restart
+
+# Stop the background service
 mls agent stop
 
-# Uninstall the agent
+# Uninstall the background agent completely
 mls agent uninstall
 ```
 
-## Configuration
+---
 
-You can modify or create your configuration file at `~/.MrLeanStorage.yaml`:
+## 🛠️ Configuration Example
 
-it looks like
+The `~/.MrLeanStorage.yaml` configuration uses simple and flexible YAML format:
 
 ```yaml
-targets:
-  - name: "VSCode Caches"
-    path: "~/Library/Caches/com.microsoft.VSCode"
-    threshold_days: 7
-    safety_level: 1
-  - name: "Chrome Caches"
-    path: "~/Library/Caches/Google/Chrome/Default/Cache"
-    threshold_days: 14
-    safety_level: 1
+# Global safety switch. If true, no files are ever deleted.
 dry_run: true
+
+# Patterns to globally ignore during scanning and deep staleness checks
 ignore_patterns:
   - ".DS_Store"
   - "._*"
   - ".Spotlight-V100"
   - ".Trashes"
   - ".fseventsd"
+
+# Cron scheduling expression (supports 6-field standard with seconds)
+# Format: Second Minute Hour DayOfMonth Month DayOfWeek
 schedule: "0 0 0 * * *"
+
+# Target directories to monitor and system commands to execute
+targets:
+  - name: "VSCode Caches"
+    path: "~/Library/Caches/com.microsoft.VSCode"
+    threshold_days: 7
+    type: "file" # "file", "folder", or "both"
+    safety_level: 1
+
+  - name: "Chrome Caches"
+    path: "~/Library/Caches/Google/Chrome/Default/Cache"
+    threshold_days: 14
+    type: "file"
+    safety_level: 1
+
+  - name: "PNPM Global Pruning"
+    command: "pnpm store prune"
+    interval_days: 7 # Run this command target once every 7 days
 ```
 
-Check the examples on [Configuration Examples](./docs/configuration/Examples/).
+Check [docs/configuration/Examples/](./docs/configuration/Examples/) for extensive config references.
 
-- [Extensive Configuration](./docs/configuration/Examples/Extensive.yml)
-  - Extensive and growing, we update it from time to time. (It's what the author is using for his own use case)
-- [Default configuration](./docs/configuration/Examples/default.yml)
-  - The Default configuration if you don't set yours (Updated with time)
+---
 
-## Testing
+## 🧪 Testing
 
-Run the full test suite:
-
-```bash
-go test ./...
-```
-
-To run tests with the **Go Race Detector** (recommended for verifying concurrency safety):
+Run the test suite with race condition detection:
 
 ```bash
 go test -race ./...
 ```
 
-## Releases
+---
 
-Refer to [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) for information on versioning, release workflows, and binary distribution best practices.
+## 📄 License
 
-## Multi-platform Support
-
-`mls` is designed to be cross-platform and should work on macOS, Linux, and Windows. However, we are currently focusing our development efforts primarily on macOS. With time, we plan to improve and expand support for other platforms.
-
-Please note that the background agent management commands (`mls agent ...`) are currently supported **only on macOS**. We will update this section as support for background services on other platforms is implemented.
-
-The rest of the commands should work on all platforms:
-
-- `mls scan`: Scans targets for files and directories to clean based on your configuration.
-- `mls clean`: Scan and deletes files and directories identified during the scan.
-- `mls serve`: Starts the background scheduler loop to perform automated cleanup. You can use it with CLI on any platform, you can set it up as a daemon, or start when the system start.
-- `mls config open`: Opens the configuration file in your default system editor.
-  - (Works only on MacOS, we will update this for cross platform)
-- `mls config reveal`: Reveals the configuration file location in your file explorer.
-  - (Works only on MacOS, we will update this for cross platform)
-- `mls config reload`: Signals the running `mls serve` daemon to reload its configuration.
-  - (Works only on Macos, we will update this for cross platform)
-  - Stop `mls serve` and start it again to reload.
-
-If you don't want to wait for the Daemon support on other platforms you can setup yours, with `mls serve`. Ask `gemini` or `gpt` for how to set up a daemon on linux or windows for `mls serve` command. `mls serve` will handle the rest for you.
-
-## License
-
-MIT
+MIT License. See [LICENSE](LICENSE) for details.
