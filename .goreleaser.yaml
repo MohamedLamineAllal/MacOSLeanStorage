@@ -55,3 +55,10 @@ homebrew_casks:
     homepage: https://github.com/MohamedLamineAllal/MrLeanStorage
     description: High-performance storage cleanup tool
     license: MIT
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/mls"]
+          end
+
