@@ -128,7 +128,6 @@ func TestScan_IgnorePatterns(t *testing.T) {
 	assert.Equal(t, keptFile, result.Files[0])
 }
 
-
 func TestScan_RecursiveGlob(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "mls-recursive-glob-test")
 	assert.NoError(t, err)

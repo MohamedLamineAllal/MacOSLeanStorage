@@ -71,4 +71,8 @@ Why is this and how can we fix this?
 ## Prompt: 2026-05-20 (Refine README, docs user guide, and INSTALL.md)
 User wants to refine README.md, docs/ USER_GUIDE.md, and update docs/INSTALL.md to reflect the latest Homebrew Cask installation changes for macOS and Linux.
 
+## Prompt: 2026-05-20 (Force dry_run: false in mls serve and add warning callouts)
+User wants to force `mls serve` (and background agent) to always run with `dry_run: false` (actually deleting files), ignoring the global `dry_run` configuration. Additionally, add warning callouts in README.md and docs/USER_GUIDE.md about this behavior.
 
+## Prompt: 2026-05-20 (Correction: dry_run: false)
+User corrected/confirmed that the background serve daemon should run in active deletion mode (`dry_run: false`).

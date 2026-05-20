@@ -7,9 +7,9 @@ import (
 // ResultAggregator provides a thread-safe way to track unique files and aggregate scan stats.
 // It uses a map to deduplicate paths, preventing memory-intensive path duplication.
 type ResultAggregator struct {
-	mu           sync.RWMutex
-	uniquePaths  map[string]int64
-	totalSize    int64
+	mu          sync.RWMutex
+	uniquePaths map[string]int64
+	totalSize   int64
 }
 
 // NewResultAggregator creates a new ResultAggregator.

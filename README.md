@@ -113,6 +113,13 @@ mls agent stop
 mls agent uninstall
 ```
 
+> [!WARNING]
+> **Active Deletion Mode Enabled by Default in Background Automation**
+> 
+> Starting `mls serve` or installing/starting the background agent (`mls agent install` / `mls agent start`) **will physically delete matched files** (running with `dry_run: false` regardless of global config settings). This ensures background automation performs actual cleanups.
+> 
+> Always verify your target patterns using `mls scan` first before initiating background automation!
+
 ---
 
 ## 🖥️ Multi-platform Support
@@ -125,7 +132,9 @@ The rest of the commands should work on all platforms:
 
 - `mls scan`: Scans targets for files and directories to clean based on your configuration.
 - `mls clean`: Scan and deletes files and directories identified during the scan.
-- `mls serve`: Starts the background scheduler loop to perform automated cleanup. You can use it with CLI on any platform, you can set it up as a daemon, or start when the system start.
+- `mls serve`: Starts the background scheduler loop to perform automated cleanup. You can use it with CLI on any platform, you can set it up as a daemon, or start when the system starts.
+  - > [!WARNING]
+  - > Runs in **active deletion mode** (`dry_run: false` regardless of global config settings) to perform actual background cleanups. Verify your patterns with `mls scan` first!
 - `mls config open`: Opens the configuration file in your default system editor.
   - (Works only on MacOS, we will update this for cross platform)
 - `mls config reveal`: Reveals the configuration file location in your file explorer.
@@ -143,7 +152,8 @@ If you don't want to wait for the Daemon support on other platforms you can setu
 The `~/.MrLeanStorage.yaml` configuration uses simple and flexible YAML format:
 
 ```yaml
-# Global safety switch. If true, no files are ever deleted.
+# Global safety switch for manual CLI cleanups (e.g., mls clean). If true, manual runs will not delete files.
+# Note: This is ignored by mls serve / mls agent background daemons, which always run in active deletion mode (dry_run: false).
 dry_run: true
 
 # Patterns to globally ignore during scanning and deep staleness checks

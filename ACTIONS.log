@@ -90,3 +90,7 @@ Action: Enriched documentation across the project:
 
 ## Action: 2026-05-20 (Refine MrLeanStorage description)
 Action: Rewrote the MrLeanStorage introduction in README.md and docs/USER_GUIDE.md to emphasize configuration-driven cleaning, personal customization, the sensible default configuration file, and the ability to execute custom system cleaning commands.
+
+## Action: 2026-05-20 (Active Background Deletion Mode & Safety Warnings)
+Action: Forced background cleanup scheduler (`mls serve` / `mls agent`) to run in active deletion mode (`dry_run: false`) regardless of global `dry_run` settings to ensure automated cleanups are active. Documented this behavior and added highly visible GFM warning callout blocks (`> [!WARNING]`) in both README.md and docs/USER_GUIDE.md.
+

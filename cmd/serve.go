@@ -39,7 +39,7 @@ var serveCmd = &cobra.Command{
 			logger.Info("Starting scheduled cleanup")
 
 			sc := scanner.New(logger, cfg.IgnorePatterns)
-			cl := cleaner.New(logger, cfg.DryRun, cfg.IgnorePatterns)
+			cl := cleaner.New(logger, false, cfg.IgnorePatterns) // Force dry_run to false for background execution to actually perform cleanup
 
 			var allPaths []string
 			// Collect paths from all configured targets

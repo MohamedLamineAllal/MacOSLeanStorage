@@ -14,10 +14,10 @@ func TestProcessor_Run(t *testing.T) {
 
 	targets := []config.TargetConfig{
 		{
-			Name: "Test Target",
-			Path: "/tmp",
+			Name:      "Test Target",
+			Path:      "/tmp",
 			Threshold: 30,
-			Type: "file",
+			Type:      "file",
 		},
 	}
 

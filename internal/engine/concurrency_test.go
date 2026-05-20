@@ -11,6 +11,7 @@ import (
 )
 
 type SlowCleaner struct{}
+
 func (m *SlowCleaner) Clean(paths []string, hook func(path string, freed int64, err error)) (int, int64, error) {
 	time.Sleep(100 * time.Millisecond)
 	return 1, 10, nil

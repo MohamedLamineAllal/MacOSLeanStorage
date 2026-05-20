@@ -14,9 +14,9 @@ var (
 	// cfgFile stores the path to the configuration file provided via flags.
 	cfgFile string
 	// logger is the global structured logger for the application.
-	logger  *zap.Logger
+	logger *zap.Logger
 	// dryRun indicates whether the application should perform a live cleanup or just simulate it.
-	dryRun  bool
+	dryRun bool
 )
 
 // rootCmd represents the base command when called without any subcommands

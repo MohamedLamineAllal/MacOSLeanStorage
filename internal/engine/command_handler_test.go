@@ -50,7 +50,11 @@ func TestCommandHandler_HookSequence(t *testing.T) {
 	}
 
 	hooks := CommandHooks{
-		BeforeHandleCommand:    func(name, cmd string, should bool) { mu.Lock(); sequence = append(sequence, "before_handle"); mu.Unlock() },
+		BeforeHandleCommand: func(name, cmd string, should bool) {
+			mu.Lock()
+			sequence = append(sequence, "before_handle")
+			mu.Unlock()
+		},
 		BeforeExecutingCommand: func(name, cmd string) { mu.Lock(); sequence = append(sequence, "before_exec"); mu.Unlock() },
 		AfterExecutingCommand:  func(name, cmd string, err error) { mu.Lock(); sequence = append(sequence, "after_exec"); mu.Unlock() },
 		AfterHandleCommand:     func(name, cmd string, err error) { mu.Lock(); sequence = append(sequence, "after_handle"); mu.Unlock() },

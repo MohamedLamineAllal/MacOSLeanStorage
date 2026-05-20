@@ -19,6 +19,7 @@
 - [x] Automated Releases: End-to-end multi-platform build and deployment setup using GitHub Actions and GoReleaser.
 - [x] Homebrew Integration: Setup and deployment via custom Tap `homebrew-mls` utilizing fine-grained PAT and quarantine-bypassing post-install hook.
 - [x] Cask Distribution Alignment: Resolved formula checksum mismatch, synchronized tap cache, and fully updated docs (INSTALL.md, USER_GUIDE.md, ARCHITECTURE.md, README.md) to reflect the GoReleaser v2 Cask standard.
+- [x] Active Background Deletion Mode: Configured the background scheduler (`mls serve` / `mls agent`) to always run in active deletion mode (`dry_run: false`) regardless of global configuration settings. Added highly visible warning callouts in the README.md and USER_GUIDE.md.
 
 
 ## Core Project Documentation

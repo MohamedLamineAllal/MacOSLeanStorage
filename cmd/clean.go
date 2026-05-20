@@ -20,11 +20,9 @@ var cleanCmd = &cobra.Command{
 		processor := NewTargetProcessor(logger, cfg.IgnorePatterns, cfg.DryRun)
 		return processor.Run(cfg.Targets, true, false)
 	},
-
 }
 
 // init adds the clean command to the root command.
 func init() {
-rootCmd.AddCommand(cleanCmd)
+	rootCmd.AddCommand(cleanCmd)
 }
-

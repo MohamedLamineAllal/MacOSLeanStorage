@@ -20,8 +20,7 @@ var scanCmd = &cobra.Command{
 		processor := NewTargetProcessor(logger, cfg.IgnorePatterns, cfg.DryRun)
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		return processor.Run(cfg.Targets, false, verbose)
-		},
-
+	},
 }
 
 // init adds the scan command to the root command.

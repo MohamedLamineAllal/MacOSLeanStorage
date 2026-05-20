@@ -95,7 +95,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 		if info.IsDir() {
 			// Traverse the directory once to collect stale files and calculate sizes
 			files, sizes, totalSize, isStale := s.traverse(p, target, now)
-			
+
 			// If target type matches 'folder' or 'both' and the entire directory is stale,
 			// mark the entire folder for deletion as one entry.
 			if target.Type == "folder" || target.Type == "both" {
@@ -106,7 +106,7 @@ func (s *Scanner) Scan(target Target, targetIgnorePatterns []string) (*Result, e
 					continue
 				}
 			}
-			
+
 			// Otherwise, collect the individual stale files within this directory
 			if target.Type == "file" || target.Type == "both" {
 				result.Files = append(result.Files, files...)
@@ -174,7 +174,6 @@ func (s *Scanner) traverse(path string, target Target, now time.Time) (files []s
 	}
 	return files, sizes, totalSize, isStale
 }
-
 
 // expandPath converts a filesystem path (supporting ~ for home directory) into an absolute path.
 func expandPath(path string) (string, error) {
