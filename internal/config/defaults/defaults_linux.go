@@ -4,17 +4,62 @@ package defaults
 
 func GetDefaultConfig() string {
 	return `targets:
-  # Chrome
+  # System/User Caches
+  - name: "User Local Caches"
+    path: "~/.cache/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
+  # Arc Browser (Linux implementation or Chromium-fork equivalents)
+  - name: "Arc CacheStorage Cache"
+    path: "~/.config/arc/User Data/**/CacheStorage"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Arc CacheStorage Cache sub"
+    path: "~/.config/arc/User Data/**/CacheStorage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Arc File System"
+    path: "~/.config/arc/User Data/**/File System"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Arc File System sub"
+    path: "~/.config/arc/User Data/**/File System/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Arc File IndexedDB"
+    path: "~/.config/arc/User Data/**/IndexedDB/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
+  # Google Chrome
   - name: "Chrome Global Cache"
     path: "~/.cache/google-chrome/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "Chrome CacheStorage"
+  - name: "Chrome CacheStorage Cache"
     path: "~/.config/google-chrome/**/CacheStorage/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "Chrome File System"
+    path: "~/.config/google-chrome/**/File System/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Chrome File IndexedDB"
+    path: "~/.config/google-chrome/**/IndexedDB/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # Communication Tools
   - name: "Discord Cache"
     path: "~/.config/discord/Cache/**"
@@ -26,25 +71,82 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "Microsoft Teams CacheStorage"
+    path: "~/.config/Microsoft/StandardTeams/**/CacheStorage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # Development Tools
+  - name: "Cursor Cache"
+    path: "~/.config/Cursor/Cache/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Cursor Cache/Cache_Data"
+    path: "~/.config/Cursor/Cache/Cache_Data/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Cursor CachedStorage"
+    path: "~/.config/Cursor/Service Worker/CacheStorage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Cursor CachedExtensionVSIXs"
+    path: "~/.config/Cursor/CachedExtensionVSIXs/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   - name: "VSCode CachedData"
     path: "~/.config/Code/CachedData/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "VSCode Service Worker Cache"
+  - name: "VSCode Cache/Cache_Data"
+    path: "~/.config/Code/Cache/Cache_Data/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "VSCode CachedStorage"
     path: "~/.config/Code/Service Worker/CacheStorage/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "VSCode CachedExtensionVSIXs"
-    path: "~/.vscode/extensions/.obsolete/**"
+  - name: "VSCode WebStorage CacheStorage"
+    path: "~/.config/Code/WebStorage/**/CacheStorage/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "VSCode CachedExtensionVSIXs"
+    path: "~/.config/Code/CachedExtensionVSIXs/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # AI & Other
+  - name: "OpenAI Atlas Cache"
+    path: "~/.cache/com.openai.atlas/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "OpenAI Atlas CachedStorage"
+    path: "~/.config/com.openai.atlas/**/Service Worker/CacheStorage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "OpenAI Atlas File System"
+    path: "~/.config/com.openai.atlas/**/File System/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   - name: "Telegram Desktop Media Cache"
     path: "~/.local/share/TelegramDesktop/tdata/user_data/media_cache/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Telegram Desktop Cache"
+    path: "~/.local/share/TelegramDesktop/tdata/user_data/cache/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
@@ -53,19 +155,25 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "Spotify Cache"
-    path: "~/.cache/spotify/Storage/**"
+  - name: "Figma Local Cache"
+    path: "~/.config/Figma/**/Cache/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  # System/Build
+  - name: "Spotify Cache"
+    path: "~/.cache/spotify/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
+  # System/Build Tools
   - name: "Go Build Cache"
     path: "~/.cache/go-build/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "npm/node-gyp"
-    path: "~/.cache/node-gyp/**"
+    path: "~/.npm/_logs/**"
     threshold_days: 30
     safety_level: 1
     type: "both"
@@ -74,6 +182,12 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "pnpm Cache"
+    path: "~/.local/share/pnpm/store/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # Commands
   - name: "PNPM Store Prune"
     command: "pnpm store prune"
@@ -83,10 +197,15 @@ func GetDefaultConfig() string {
     command: "npm cache clean --force"
     interval_days: 30
     safety_level: 1
+  - name: "Flatpak Uninstall Unused" # Linux specific package management cleanup
+    command: "flatpak uninstall --unused -y"
+    interval_days: 30
+    safety_level: 1
+
 dry_run: true
 ignore_patterns:
-  - ".DS_Store"
-  - ".thumbnails"
+  - ".lost+found"
+  - "..*"
 schedule: "0 0 0 * * *"
 `
 }

@@ -4,107 +4,205 @@ package defaults
 
 func GetDefaultConfig() string {
 	return `targets:
-  # Arc Browser
-  - name: "Arc CacheStorage"
-    path: "%LOCALAPPDATA%\\Arc\\User Data\\**\\CacheStorage\\**"
+  # System/User Caches
+  - name: "User Local Caches"
+    path: "%LocalAppData%\\Temp\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
+  # Arc Browser (Windows uses standard Chromium structures here)
+  - name: "Arc CacheStorage Cache"
+    path: "%LocalAppData%\\Arc\\User Data\\**\\CacheStorage"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Arc CacheStorage Cache sub"
+    path: "%LocalAppData%\\Arc\\User Data\\**\\CacheStorage\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Arc File System"
-    path: "%LOCALAPPDATA%\\Arc\\User Data\\**\\File System\\**"
+    path: "%LocalAppData%\\Arc\\User Data\\**\\File System"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "Arc IndexedDB"
-    path: "%LOCALAPPDATA%\\Arc\\User Data\\**\\IndexedDB\\**"
+  - name: "Arc File System sub"
+    path: "%LocalAppData%\\Arc\\User Data\\**\\File System\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "Arc File IndexedDB"
+    path: "%LocalAppData%\\Arc\\User Data\\**\\IndexedDB\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # Google Chrome
   - name: "Chrome Global Cache"
-    path: "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Cache\\**"
+    path: "%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "Chrome CacheStorage"
-    path: "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\**\\CacheStorage\\**"
+  - name: "Chrome CacheStorage Cache"
+    path: "%LocalAppData%\\Google\\Chrome\\User Data\\**\\CacheStorage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Chrome crx Cache"
+    path: "%LocalAppData%\\Google\\Chrome\\User Data\\**\\Web Applications\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Chrome File System"
-    path: "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\**\\File System\\**"
+    path: "%LocalAppData%\\Google\\Chrome\\User Data\\**\\File System\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "Chrome IndexedDB"
-    path: "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\**\\IndexedDB\\**"
+  - name: "Chrome File IndexedDB"
+    path: "%LocalAppData%\\Google\\Chrome\\User Data\\**\\IndexedDB\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+
   # Communication Tools
   - name: "Discord Cache"
-    path: "%APPDATA%\\discord\\Cache\\**"
+    path: "%AppData%\\discord\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Slack CacheStorage"
-    path: "%APPDATA%\\Slack\\Service Worker\\CacheStorage\\**"
+    path: "%LocalAppData%\\Slack\\**\\CacheStorage\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Microsoft Teams CacheStorage"
-    path: "%APPDATA%\\Microsoft\\Teams\\CacheStorage\\**"
+    path: "%LocalAppData%\\Packages\\MSTeams_8wekyb3d8bbwe\\LocalCache\\Microsoft\\MSTeams\\**\\CacheStorage\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+
   # Development Tools
-  - name: "VSCode CachedData"
-    path: "%APPDATA%\\Code\\CachedData\\**"
+  - name: "Cursor Cache"
+    path: "%AppData%\\Cursor\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  - name: "VSCode Service Worker Cache"
-    path: "%APPDATA%\\Code\\Service Worker\\CacheStorage\\**"
+  - name: "Cursor Cache/Cache_Data"
+    path: "%AppData%\\Cursor\\Cache\\Cache_Data\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Cursor CachedStorage"
+    path: "%AppData%\\Cursor\\Service Worker\\CacheStorage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Cursor CachedExtensionVSIXs"
+    path: "%AppData%\\Cursor\\CachedExtensionVSIXs\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "VSCode CachedData"
+    path: "%AppData%\\Code\\CachedData\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "VSCode Cache/Cache_Data"
+    path: "%AppData%\\Code\\Cache\\Cache_Data\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "VSCode CachedStorage"
+    path: "%AppData%\\Code\\Service Worker\\CacheStorage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "VSCode WebStorage CacheStorage"
+    path: "%AppData%\\Code\\WebStorage\\**\\CacheStorage\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "VSCode CachedExtensionVSIXs"
-    path: "%USERPROFILE%\\.vscode\\extensions\\.obsolete\\**"
+    path: "%AppData%\\Code\\CachedExtensionVSIXs\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+
   # AI & Other
+  - name: "OpenAI Atlas Cache"
+    path: "%AppData%\\com.openai.atlas\\Cache\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "OpenAI Atlas CachedStorage"
+    path: "%AppData%\\com.openai.atlas\\Service Worker\\CacheStorage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "OpenAI Atlas File System"
+    path: "%AppData%\\com.openai.atlas\\File System\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   - name: "Telegram Desktop Media Cache"
-    path: "%APPDATA%\\Telegram Desktop\\tdata\\user_data\\media_cache\\**"
+    path: "%AppData%\\Telegram Desktop\\tdata\\user_data\\media_cache\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Telegram Desktop Cache"
+    path: "%AppData%\\Telegram Desktop\\tdata\\user_data\\cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Figma Local Storage"
-    path: "%APPDATA%\\Figma\\Local Storage\\**"
+    path: "%AppData%\\Figma\\Local Storage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Figma Local Cache"
+    path: "%LocalAppData%\\Figma\\**\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "Spotify Cache"
-    path: "%LOCALAPPDATA%\\Spotify\\Storage\\**"
+    path: "%LocalAppData%\\Spotify\\Storage\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
-  # System/Build
+
+  # System/Build Tools
   - name: "Go Build Cache"
-    path: "%USERPROFILE%\\AppData\\Local\\go-build\\**"
+    path: "%LocalAppData%\\go-build\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Scoop Cache" # Replacing Homebrew with Windows equivalent Scoop
+    path: "%LocalAppData%\\scoop\\apps\\scoop\\current\\cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "npm/node-gyp"
-    path: "%LOCALAPPDATA%\\node-gyp\\Cache\\**"
+    path: "%AppData%\\npm-cache\\_logs\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
   - name: "pip Cache"
-    path: "%LOCALAPPDATA%\\pip\\Cache\\**"
+    path: "%LocalAppData%\\pip\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "pnpm Cache"
+    path: "%LocalAppData%\\pnpm\\Cache\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Microsoft OneNote notes backup"
+    path: "%LocalAppData%\\Microsoft\\OneNote\\*\\Backup\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+
   # Commands
   - name: "PNPM Store Prune"
     command: "pnpm store prune"
@@ -114,10 +212,12 @@ func GetDefaultConfig() string {
     command: "npm cache clean --force"
     interval_days: 30
     safety_level: 1
+
 dry_run: true
 ignore_patterns:
-  - "thumbs.db"
   - "desktop.ini"
+  - "thumbs.db"
+  - "$RECYCLE.BIN"
 schedule: "0 0 0 * * *"
 `
 }

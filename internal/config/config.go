@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/viper"
-	"github.com/mohamedlamineallal/MacosLeanStorage/internal/config/defaults"
+	"github.com/mohamedlamineallal/MrLeanStorage/internal/config/defaults"
 )
 
 // Config represents the application's root configuration structure.

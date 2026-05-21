@@ -45,3 +45,6 @@
 - Regular audit and updates of target app cache paths in `default.yml` & `Extensive.yml`.
 - Monitoring Homebrew tap installations and binary signature notarization for newer macOS updates.
 - Refinement of cleanup duration stats to provide execution-time metrics.
+- Implemented multi-platform configuration support via compile-time build tags.
+- Added ExpandPath utility for environment variable and tilde expansion.
+- Organized documentation examples for macOS, Windows, and Linux.
