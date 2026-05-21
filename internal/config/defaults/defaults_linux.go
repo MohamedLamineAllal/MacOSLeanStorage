@@ -21,6 +21,11 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "Slack CacheStorage"
+    path: "~/.config/Slack/Service Worker/CacheStorage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   # Development Tools
   - name: "VSCode CachedData"
     path: "~/.config/Code/CachedData/**"
@@ -32,6 +37,27 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "VSCode CachedExtensionVSIXs"
+    path: "~/.vscode/extensions/.obsolete/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  # AI & Other
+  - name: "Telegram Desktop Media Cache"
+    path: "~/.local/share/TelegramDesktop/tdata/user_data/media_cache/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Figma Local Storage"
+    path: "~/.config/Figma/Local Storage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Spotify Cache"
+    path: "~/.cache/spotify/Storage/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   # System/Build
   - name: "Go Build Cache"
     path: "~/.cache/go-build/**"
@@ -40,6 +66,11 @@ func GetDefaultConfig() string {
     type: "both"
   - name: "npm/node-gyp"
     path: "~/.cache/node-gyp/**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "pip Cache"
+    path: "~/.cache/pip/**"
     threshold_days: 30
     safety_level: 1
     type: "both"

@@ -52,6 +52,11 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  - name: "Microsoft Teams CacheStorage"
+    path: "%APPDATA%\\Microsoft\\Teams\\CacheStorage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   # Development Tools
   - name: "VSCode CachedData"
     path: "%APPDATA%\\Code\\CachedData\\**"
@@ -68,6 +73,22 @@ func GetDefaultConfig() string {
     threshold_days: 30
     safety_level: 1
     type: "both"
+  # AI & Other
+  - name: "Telegram Desktop Media Cache"
+    path: "%APPDATA%\\Telegram Desktop\\tdata\\user_data\\media_cache\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Figma Local Storage"
+    path: "%APPDATA%\\Figma\\Local Storage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "Spotify Cache"
+    path: "%LOCALAPPDATA%\\Spotify\\Storage\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
   # System/Build
   - name: "Go Build Cache"
     path: "%USERPROFILE%\\AppData\\Local\\go-build\\**"
@@ -76,6 +97,11 @@ func GetDefaultConfig() string {
     type: "both"
   - name: "npm/node-gyp"
     path: "%LOCALAPPDATA%\\node-gyp\\Cache\\**"
+    threshold_days: 30
+    safety_level: 1
+    type: "both"
+  - name: "pip Cache"
+    path: "%LOCALAPPDATA%\\pip\\Cache\\**"
     threshold_days: 30
     safety_level: 1
     type: "both"
